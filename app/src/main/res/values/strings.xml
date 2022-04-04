@@ -1,0 +1,279 @@
+﻿<resources>
+    <string name="app_name">Cropserve</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="title_activity_maps">Map</string>
+
+    <string name="title_activity_drawer" translatable="false">drawer</string>
+
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+
+    /*menu item names*/
+    <string name="item_start">Start</string>
+    <string name="item_feld">Felder</string>
+    <string name="item_dmg">Schadensmeldungen</string>
+    <string name="item_contract">Verträge</string>
+    <string name="item_acc">Account</string>
+    <string name="item_app">Über Conserve</string>
+    <string name="item_help">Hilfe</string>
+    <string name="item_logout">Logout</string>
+
+
+    /*strings relating to FeldFragment*/
+    <string name="fieldreg_up">Neues Feld anlegen</string>
+    <string name="field_delete">Feld löschen</string>
+    <string name="nav_headerText" translatable="false">User Name</string>
+    <string name="nav_headerMail" translatable="false">user@email.com</string>
+    <string name="save_btn">Speichern</string>
+    <string name="gps_btn">GPS</string>
+    <string name="pos_btn">Setze Position</string>
+    <string name="edit_btn">Info</string>
+    <string name="add_btn">Info</string>
+    <string name="foto">+ Foto hinzufügen</string>
+    <string name="feldOhneVertrag">Feld Ohne Vertrag: ID#</string>
+    <string name="chosen_user">Benutzer:</string>
+
+
+    /*Feld-Info Art-Array*/
+    <string-array name="feld_arten">
+        <item>Weizen</item>
+        <item>Roggen/Wintermenggetreide</item>
+        <item>Gerste</item>
+        <item>Kartoffeln</item>
+        <item>Winterraps</item>
+        <item>Mais</item>
+        <item>Gartenbauerzeugnisse</item>
+        <item>Stillgelegte Fläche</item>
+    </string-array>
+
+    /*Feld-Info Vertrag-Array*/
+    <string-array name="feld_verträge">
+        <item>Haftpflichtversicherung</item>
+        <item>Unwetterschäden</item>
+        <item>Naturgewalten</item>
+        <item>Frost-Schutz</item>
+        <item>Schädlingsbefall</item>
+        <item>Wildschaden</item>
+        <item>Sachbeschädigung</item>
+    </string-array>
+
+    /*deletion and warning toasts*/
+    <string name="delete_toast">%1$s wurde gelöscht.</string>
+    <string name="no_picture">Kein Bild vorhanden.</string>
+
+    /*dialog fillings*/
+    <string name="del_dmg">Schadensfall löschen</string>
+    <string name="del_feld">Feld löschen</string>
+    <string name="del_confirm1">%1$s löschen?</string>
+    <string name="del_confirm2">%1$s löschen? Aktion kann nicht rückgängig gemacht werden.</string>
+    <string name="dialog_description">Weitere Feld-Informationen</string>
+    <string name="no_internet">Es wird eine initiale Internet-Verbindung benötigt, um die Kartenansicht und ihre Funktionen zu nutzen.</string>
+
+    /*strings login*/
+    <string name="action_sign_in_short">Passwort?</string>
+    <string name="title_activity_login">Willkommen</string>
+    <string name="error_field_required">Feld muss ausgefüllt werden!</string>
+    <string name="error_invalid_userid">Ungültige Nutzererkennung!</string>
+    <string name="error_invalid_password">Feld muss ausgefüllt werden!</string>
+    <string name="login">Anmelden</string>
+    <string name="password_hint">Passwort</string>
+    <string name="userid_hint">Persönliche Nutzererkennung</string>
+    <string name="logout_dialog_title">Abmelden?</string>
+    <string name="positive_logout_dialog_option">Ja</string>
+    <string name="negative_logout_dialog_option">Nein</string>
+    <string name="user_role_prompt">Kontotyp auswählen</string>
+    <string-array name="user_role_selection">
+        <item>Versicherungsnehmer</item>
+        <item>Gutachter</item>
+    </string-array>
+
+
+    /*Schadensmeldungen*/
+    <string name="report_dmg">Schadensfall melden</string>
+    <string name="dialog_descr_sf">Weitere Schadensfall-Informationen</string>
+    <string name="dmg_status">gemeldet</string>
+    <string name="s_fall">Schadensfall</string>
+    <string name="s_schaden">Schaden</string>
+
+    /*types of Schadensfälle*/
+    <string-array name="schadens_arten">
+        <item>Schaden durch Erdbeben</item>
+        <item>Hagel-Schaden</item>
+        <item>Wildschaden</item>
+        <item>Überschwemmung</item>
+        <item>Dürre</item>
+        <item>Lawine</item>
+        <item>Schaden durch Personen</item>
+    </string-array>
+
+    /*search related*/
+    <string name="search_title">Suche</string>
+    <string name="search_hint">App durchsuchen...</string>
+    <string name="search_resultF">%1$s befindet sich unter \"Felder\".</string>
+    <string name="search_resultS">%1$s befindet sich unter \"Schadensmeldungen\".</string>
+    <string name="search_resultDefault">Derzeit keine weiteren Informationen verfügbar.</string>
+    <string name="search_resultC">%1$s ist unter \"Verträge\" zu finden.</string>
+
+
+    /*TOASTs*/
+    <string name="info_missing">Bitte Feld-Informationen angeben</string>
+    <string name="info_missing2">Bitte Schadens-Informationen angeben</string>
+    <string name="title_activity_search_results" translatable="false">SearchResultsActivity</string>
+    <string name="coordinate_missing">Schadenskoordinaten liegen nicht in einem registrierten Feld</string>
+    <string name="marker_missing">Zu wenig Marker für eine Fläche</string>
+    <string name="info_missing3">Unvollständige Angaben</string>
+    <string name="no_permission">Kamera-Funktion nicht freigegeben.</string>
+    <string name="no_file">Fehler bei Erstellung der Datei</string>
+
+
+    /*error messages*/
+    <string name="error_1">Fehler beim Anlegen der Tabellen: </string>
+    <string name="login_failed">Nutzererkennung oder Passwort sind falsch. Versuchen Sie es erneut</string>
+
+
+    /*various buttons*/
+    <string name="button_okay">Okay</string>
+    <string name="button_cancel">Abbrechen</string>
+    <string name="button_del">Löschen</string>
+    <string name="button_no">Nein</string>
+    <string name="button_yes">Ja</string>
+    <string name="button_new_field">Neues Feld anlegen</string>
+    <string name="my_fields">Meine Felder</string>
+
+    /*dialog text fields*/
+    <string name="d_feld">Feld-Art</string>
+    <string name="d_region">Region</string>
+    <string name="d_vertrag">Vertragswahl</string>
+    <string name="d_foto">Foto</string>
+    <string name="d_bland">Bundesland</string>
+    <string name="d_land">Land</string>
+    <string name="d_stadt">Stadt</string>
+    <string name="d_bezirk">Landkreis</string>
+    <string name="d_gutachter">Gutachter</string>
+    <string name="d_damage">Schadensart</string>
+    <string name="d_vnehmer">Versicherungsnehmer</string>
+
+
+    /*list info fillings*/
+    <string name="list_data_header">Feld mit Vertrag: ID#</string>
+    <string name="s_list_data_header">Schadensfall: ID#</string>
+    <string name="l_maß">ha</string>
+    <string name="l_art">Art: </string>
+    <string name="l_fläche">Feldfläche: </string>
+    <string name="l_land">Land: </string>
+    <string name="l_bland">Bundesland: </string>
+    <string name="l_landkreis">Landkreis: </string>
+    <string name="l_stadt">Stadt: </string>
+    <string name="l_vertrag">Vertrag: </string>
+
+    <string name="l_s_art">Schadensart:  </string>
+    <string name="l_s_feld">Feld:  </string>
+    <string name="l_s_status">Status:  </string>
+    <string name="l_s_loc">Standort: </string>
+    <string name="l_s_area">Fläche:  </string>
+    <string name="l_s_rev">Gutachter:  </string>
+    <string name="l_s_date">Datum:  </string>
+    <string name="l_s_person">Versicherungsnehmer: </string>
+
+
+    /*search results and terms*/
+    <string name="search_feld">Feld</string>
+    <string name="search_vertrag">Vertrag</string>
+    <string name="search_resultno">Keine Suchergebnisse...</string>
+    <string name="sr_schaden">Schadensfall: #</string>
+    <string name="sr_feld">Feld: #</string>
+
+
+    /*contract description fragment*/
+    //note: %1$s is the first (%1) dynamically assigned String object($s) in a string (use $d for a
+    decimal number)
+    <string name="contract_header">Vertragsinfo: %1$s </string>
+    <string name="contract_fields">Felder, die diesen Vertrag benutzen:</string>
+    <string name="no_fields">Keine Felder mit diesem Vertrag.</string>
+
+
+    <string name="contract1">Risiken die bei normalem Betrieb Ihres Unternehmens entstehen können, werden durch die Haftpflichtversicherung abgedeckt.\nSie umfasst unter anderem eine Absicherung für die Privathaftpflicht, Bauherrenhaftpflicht, den Handel von agrarwirtschaftlichen Erzeugnissen,eine Ertragsausfallversicherung und viele weitere Risikobereiche.
+        Eine vollständige und detaillierte Liste der Ihnen zur Verfügung stehenden Risikoabsicherungen finden Sie auf unserer Website.</string>
+
+    <string name="contract2">Unwetterschäden sind plötzlich und unberechenbar und vernichten schnell die gesamte Ernte mehrerer Felder.\nMit dieser Versicherung werden die am häufigsten auftretenden Unwetterschäden abgeckt.\nDazu gehören unter anderem Hagel, Überflutungen, Erdrutsche und Starkregen. Die daraus resultierenden Schäden werden begutachtet und ein Schadensprofil erstellt.</string>
+    <string name="contract3">Naturgewalten sind unberechenbar und richten fast ausnahmslos sehr großen Schaden an; die Kosten für Bestandsverlust und jegliche Form von Schaden sind enorm. Um Versicherungsnehmer dabei zu unterstützen, bietet diese Versicherung eine weit gefächerte Abdeckung von extremen, naturbedingten Schäden und entlastet durch ein einfaches Programm mit Entlastungshilfen und individuellen Kostenplänen.</string>
+    <string name="contract4">In der kalten Jahreszeit kann trotz präventiv getroffener Maßnahmen der Frost durchkommen und Felder und Ernte schwer beschädigen. Die resultierenden Kosten sind schwer zu kompensieren. Mit dieser Versicherung werden unteranderem Kosten an Wasserleitungen auf den Felder wie auch direkte Schäden an bebauten Feldern abgedeckt.</string>
+    <string name="contract5">Schädlinge wie Termiten, Wespen, Käfer oder Ameisen führen zu einer Beschädigung der Ernte und stellen damit eine große Gefahr für den möglichen Ertrag und das Einkommen dar. Trotz aller Vorsorge kann es immer wieder dazu kommen und dann kommt diese Versicherung ins Spiel. Mit Vor-Ort-Beratung und Schadenserfassung kann durch einen guten dokumentierten Schadensfall die Gefahr für große Verluste eingedämmt und verringert werden.</string>
+    <string name="contract6">Von wilden Tieren verursachter Schaden ist selten rechtlich nicht verfolgbar und die Geschädigten bleiben somit auf den Kosten sitzen. Diese Versicherung bietet Schutz vor solchen entstandenen Schäden, egal ob Gebäudeschaden oder Schäden an Feldern und Ernte, und hilft mit einem zuständigen Kontakt zu Ihrer Versicherung den Schaden schnell und genau zu belegen. </string>
+    <string name="contract7">Sachbeschädigung an Häusern oder Gut gehört zu den häufigsten Vandalismus-Schäden und die Reparatur- und möglicherweise auch Reinigungskosten sind oft sehr hoch. Vor allem da der Schaden oftmals erst später entdeckt wird, ist eine Schadenersatzforderung ohne Täter schwierig. Diese Versicherung bietet Kostendeckung für Vandalismus durch Dritte und mögliche rechtliche Schritte.</string>
+
+
+    /*account related strings*/
+    <string name="new_user_pw">Passwort</string>
+    <string name="new_user_pw_rp">Passwort wiederholen</string>
+    <string name="new_user_name">Vorname</string>
+    <string name="new_user_sName">Nachname</string>
+    <string name="new_user_address">Adresse</string>
+    <string name="new_user">Einen Benutzeraccount erstellen</string>
+    <string name="new_user_button">Benutzer anlegen</string>
+    <string name="no_match_pw">Passwörter stimmen nicht überein.</string>
+    <string name="match_user">Benutzer existiert bereits.</string>
+    <string name="required_form">Bitte alle Felder ausfüllen.</string>
+    <string name="success_createUser">Benutzer wurde erfolgreich erstellt.</string>
+    <string name="change_password_button_text">Eigenes Passwort ändern</string>
+    <string name="user_list">Versicherungsnehmer-Übersicht</string>
+    <string name="delete_user">Benutzer löschen</string>
+    <string name="create_user">Benutzer erstellen</string>
+    <string name="contain_dialog_delete">löschen</string>
+    <string name="delete_user_d1">Möchten sie den Benutzer %1$s aus der Datenbank löschen?</string>
+    <string name="delete_user_dConfirm">%1$s wirklich löschen? Der Vorgang ist unumkehrbar und löscht auch die Felder und Schadensmeldungen.</string>
+    <string name="selection_cont">Weiter</string>
+    <string name="contain_dialog_create">erstellen</string>
+    <string name="acc_field">Felddaten:\n</string>
+    <string name="num_fields">Anzahl Felder: %1$d\n</string>
+    <string name="num_damages">Anzahl Schadensmeldungen: %1$d</string>
+    <string name="allfield_area">Felder Gesamtfläche: %1$s ha</string>
+    <string name="personal_data">Persönliche Daten</string>
+    <string name="name">Name: </string>
+    <string name="adress">Adresse: </string>
+    <string name="id">Benutzer-ID: </string>
+    <string name="role">Rolle: </string>
+    <string name="hint">Hinweis</string>
+    <string name="ok">OK</string>
+    <string name="hint_message_text">Wenn Ihre tatsächlichen Daten abweichen, wenden Sie sich bitte direkt an die Versicherung.</string>
+
+    /*Hilfe Fragment Strings */
+    <string name="help_Start">Map und Felder:\n\nIn der Startansicht sieht man registrierte Felder in <b>Blau</b> und gemeldete Schadensfälle in <b>Rot</b></string>
+    <string name="help_Menü">Bedienung des Menüs:\n\nDas Menü wird durch einen Klick auf das Menüsymbol oder durch Ziehen vom linken Bildschirmrand nach rechts geöffnet. Die Unterpunkte im Menü erreicht man durch einfaches Klicken auf diese.</string>
+    <string name="help_Feldererfassen">Ein neues Felder anlegen:\n\nMit dem Button \"Neues Feld\" kommt man in eine Kartenansicht, in der man neue Felder erstellen kann.\nMit Tippen auf die Karte oder mit dem Button \"Setze Marker\" kann man Eckpunkte des Feldes setzen. Wenn man den Marker (Eckpunkt) nochmal antippt, wird er gelöscht. Wenn man den länger Marker festhält, kann man seine Position ändern.\nNachdem man sein Feld gesetzt hat, muss man zusätzliche Informationen zu dem Feld erfassen. Durch das Klicken auf den Button \"Info\", wird ein Dialog geöffnet, in dem man diese Informationen erfassen kann.</string>
+    <string name="help_Feldereditieren">Ein Feld editieren:\n\nIn der Felderansicht kann man durch Klicken auf das Stift-Symbol neben einem Feld das Feld editieren. Hierzu wird eine Kartenansicht geöffnet, in der die Eckpunkte des zu editierenden Feldes angezeigt werden. Durch längeres Klicken auf einen Marker, kann die Position des Markers angepasst werden.\nDurch kurzes Antippen eines Markers kann dieser gelöscht werden. Über \'Info\' wird ein Dialog geöffnet, indem man die zusätzlichen Informationen zu dem Feld einträgt.</string>
+    <string name="help_Felderlöschen">Ein Feld löschen:\n\nIn der Felderansicht kann man durch längeres Klicken auf ein Feld das Feld löschen, nachdem dafür ein Dialog zweimal bestätigt wurde.</string>
+    <string name="help_Feldersubmenü">Feld-Informationen einsehen:\n\nWeitere Informationen über ein Feld erhält man, wenn man dieses in der Felderansicht kurz anklickt und sich damit eine kleine Liste mit den Details aufklappt.</string>
+    <string name="help_Schadenerfassen">Einen Schadensfall melden:\n\nIn der Schadensansicht kann man durch Klicken auf den Button \"Schadensfall melden\" einen Schaden melden. Dafür öffnet sich eine Kartenansicht, in der man den Schaden an einem Feld einzeichnen kann. Über \"Setze Position\" setzt man die Eckpunkte der Schadensfläche, wobei die Marker dort gesetzt werden, wo sich das Fadenkreuz befindet. Der Schaden wird dem Feld zugewiesen, in dem der Schaden liegt. Hierzu <i>müssen</i> alle Eckpunkte des Schaden in genau einem Feld liegen. Nachdem man den Schaden vollständig eingezeichnet hat, müssen zusätzliche Informationen zum Schaden erfasst werden. Mit Klicken auf den Button \"Info\" öffnet sich dafür ein Dialog, in dem man die benötigten Informationen eingibt und mit \"Okay\" bestätigt. Mit dem Button \"Speichern\" speichert man den Schadensfall und kehrt zur Schadensansicht zurück.</string>
+    <string name="help_Schadeneditieren">Schadensfall-Informationen einsehen und editieren:\n\nIn der Schadensansicht hat man durch kurzes Klicken auf einen Schadensfall die Möglichkeit, zusätzliche Informationen und ein Foto des Schadensfalle anzuschauen oder über die Map zu editieren.\nDafür öffnet sich eine Kartenansicht. Im oberen Teil des Bildschirms sieht man die zusätzlichen Informationen und im unteren Teil die eingezeichneten Eckpunkte des Schadenfalls. Mit einem Klick auf einen Marker, kann man diesen entfernen; durch längeres Klicken kann man diesen bewegen. Ein neuer Marker wird über \"Setze Position\" gesetzt.\nMit einem Klick auf das Stfit-Symbol oben rechts erfasst man die zusätzlichen Informationen. Dazu wird ein Dialog geöffnet, in dem man die Informationen ausfüllt und mit \"OKAY\" abspeichert. Man kehrt danach in die Schadensansicht zurück.</string>
+    <string name="help_Schadenlöschen">Einen Schadensfall löschen:\n\nUm einen Schadensfall zu löschen, klickt man unter \"Schadensmeldungen\" länger auf den zu löschenden Schadensfall. Es öffnet sich ein Dialog, in dem man zweimal die Löschung bestätigen muss.</string>
+    <string name="help_Verträgeansicht">Verträge einsehen:\n\nIn der Vertragsansicht werden alle Verträge angezeigt, die den Benutzern angeboten werden. Durch Klicken auf einen Vertrag, kann man dessen detaillierte Informationen anschauen und ob und welche Felder diesem Vertrag zugeordnet sind.</string>
+    <string name="help_Accountansicht">"Account und Persönliche Daten:\n\nIn der Accountansicht sieht man seine persönliche Daten und allgemeine Daten zu seinen Feldern. Außerdem kann man sein Passwort über den Punkt \"Passwort ändern\" ändern. "</string>
+    <string name="help_Creation">Einen Benutzer erstellen:\n\nNur als Gutachter hat man in seiner Accountansicht unter dem Punkt \"Benutzer erstellen\" die Möglichkeit, einen neuen Account für einen Verischerungsnehmer zu erstellen. Dafür muss einfach nur das Formular ausgefüült werden und mit \"Benutzer erstellen\" wird der Vorgang abgeschlossen.</string>
+    <string name="help_Deletion">Einen Benutzer löschen:\n\nNur als Gutachter hat man die Möglichkeit über seine Accountansicht einen existierenden Versicherungsnehmer zu löschen. Dafür geht klickt man entweder auf den Button \"Benutzer löschen\" oder geht direkt zur Liste der Benutzer unter \"Versicherungsnehmer-Übersicht\". Um einen Benutzer dann zu löschen, muss man auf dessen Namen klicken und halten. Es öffnet sich ein Dialog-Fenster, welches nach Bestätigung des Löschvorgangs fragt. Nach zweimaliger Bestätigung wird der Benutzer dann samt Feldern und Schadensmeldungen entfernt. Die Listenansicht sollte einmal verlassen werden, danach befindet sich der gelöschte Benutzer auch dort nicht mehr.</string>
+    <string name="help_AppInfo">App-Informationen und Sprachen:\n\nUnter \"Über Cropserve\" kann man den Namen und die Version dieser App nachschauen sowie die Sprache wechseln. Es stehen Deutsch und Englisch zur Auswahl.</string>
+    <string name="help_Logout">Aus Account ausloggen:\n\nDurch Klicken und Bestätigen des Menüpunktes \"Logout\" loggt man sich aus seinem Benutzer-Account aus und kehrt zum Login-Screen zurück.</string>
+    <string name="wrong_password">Falsches Passwort</string>
+    <string name="passwords_unequal">Passwörter sind nicht gleich.</string>
+    <string name="password_min_length">Passwort muss mindestens 4 Zeichen lang sein.</string>
+    <string name="password_change_successful">Ihr Passwort wurde erfolgreich geändert.</string>
+    <string name="current_password">Aktuelles Passwort</string>
+    <string name="new_password">Neues Passwort</string>
+    <string name="confirm_new_password">Neues Passwort bestätigen</string>
+
+    /*app info strings*/
+    <string name="lang_de">Deutsch</string>
+    <string name="lang_en">Englisch</string>
+    <string name="lang_C_En">Es wurde Englisch als Sprache gewählt. App wurde geschlossen. Bitte App neu starten.</string>
+    <string name="lang_C_De">Es wurde Deutsch als Sprache gewählt. App wurde geschlossen. Bitte App neu starten.</string>
+    <string name="permissions_info">Berechtigungen</string>
+    <string name="permissions_Detail">Kamera und Position</string>
+    <string name="spinner_lang">Sprache auswählen...</string>
+    <string name="language_text">Sprache</string>
+    <string name="search_resultContract">Dieser Vertrag ist unter \"Verträge\" zu finden.\n</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+
+</resources>

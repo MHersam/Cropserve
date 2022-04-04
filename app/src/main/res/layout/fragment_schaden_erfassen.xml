@@ -1,0 +1,77 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SchadenErfassen">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/setDmgMarker"
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:layout_marginBottom="7dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:backgroundTint="@color/kind_buttons"
+            android:elevation="10dp"
+            android:text="@string/pos_btn"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            tools:layout_constraintBottom_creator="1"
+            tools:layout_constraintLeft_creator="1" />
+
+        <Button
+            android:id="@+id/gpsDmg"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:backgroundTint="@color/kind_buttons"
+            android:elevation="10dp"
+            android:text="@string/gps_btn"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/saveDmgInfo"
+            app:layout_constraintTop_toTopOf="@+id/saveDmgInfo"
+            tools:layout_constraintBottom_creator="1"
+            tools:layout_constraintRight_creator="1"
+            tools:layout_constraintTop_creator="1"
+            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintRight_toLeftOf="@+id/addDmgInfo" />
+
+        <Button
+            android:id="@+id/saveDmgInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:backgroundTint="@color/kind_buttons"
+            android:elevation="10dp"
+            android:text="@string/save_btn"
+            android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/setDmgMarker"
+            app:layout_constraintLeft_toLeftOf="@+id/addDmgInfo"
+            app:layout_constraintRight_toRightOf="@+id/addDmgInfo"
+            app:layout_constraintTop_toTopOf="@+id/setDmgMarker"
+            tools:layout_constraintBottom_creator="1"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"
+            tools:layout_constraintTop_creator="1" />
+
+        <Button
+            android:id="@+id/addDmgInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="3dp"
+            android:layout_marginRight="3dp"
+            android:backgroundTint="@color/kind_buttons"
+            android:text="@string/add_btn"
+            android:visibility="visible"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:layout_constraintBottom_creator="1"
+            tools:layout_constraintRight_creator="1"
+            app:layout_constraintBottom_toTopOf="@+id/saveDmgInfo" />
+    </android.support.constraint.ConstraintLayout>
+
+</FrameLayout>

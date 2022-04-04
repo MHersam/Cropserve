@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>AccountFragment.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debugAndroidTest</a> &gt; <a href="index.source.html" class="el_package">de.uni_stuttgart.informatik.sopra.sopraapp</a> &gt; <span class="el_source">AccountFragment.java</span></div><h1>AccountFragment.java</h1><pre class="source lang-java linenums">package de.uni_stuttgart.informatik.sopra.sopraapp;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+
+import static de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity.polygons;
+
+/*
+ * Class that handles the different accounts (view and settings)
+ *
+ * @author Patrick Koss
+ * @author Sarah Gutierrez Muñoz
+ * @author Michael Hersam
+ */
+public class AccountFragment extends Fragment {
+    ArrayList&lt;String&gt; listItems;
+    DatenbankDaten db;
+    Person p;
+    Bundle extras;
+
+    /**
+     * construcktor
+     */
+<span class="fc" id="L39">    public AccountFragment() {</span>
+        // Required empty public constructor
+<span class="fc" id="L41">    }</span>
+
+    /**
+     * method is called when the Fragment gets called
+     * @param savedInstanceState
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L49">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L50">    }</span>
+
+    /**
+     * after the Fragment is created, here the entire layout and functions gets initialized
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+<span class="fc" id="L62">        extras = getActivity().getIntent().getExtras();</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        for(int i=0;i&lt;polygons.size();i++){</span>
+<span class="fc" id="L64">            polygons.get(i).setClickable(false);</span>
+        }
+        //setup database connection
+<span class="fc" id="L67">        db = new DatenbankDaten(getActivity().getApplicationContext());</span>
+<span class="fc" id="L68">        db.open();</span>
+
+        //make sure database is not empty
+<span class="pc bpc" id="L71" title="2 of 4 branches missed.">        if (db.getBenutzer().length == 0 || db.getGutachter().length == 0){</span>
+<span class="nc" id="L72">            db.data();</span>
+        };
+
+        //if(Versicherungsnehmer) else gutachter == true
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        if(extras.getString(&quot;role&quot;).equals(getResources().getStringArray(R.array.user_role_selection)[0])){</span>
+<span class="fc" id="L77">            p = (Person) db.getBenutzerById((int) extras.getInt(&quot;userID&quot;));</span>
+<span class="fc" id="L78">            listItems = insuredData();</span>
+        } else {
+<span class="fc" id="L80">            p = (Person) db.getGutachterById((int) extras.getInt(&quot;userID&quot;));</span>
+<span class="fc" id="L81">            listItems = expertData();</span>
+        }
+<span class="fc" id="L83">        db.close();</span>
+
+<span class="fc" id="L85">        listItems.add(getString(R.string.change_password_button_text));</span>
+
+<span class="fc" id="L87">        ArrayAdapter &lt;String&gt; adapter =</span>
+                new ArrayAdapter&lt;&gt;(
+<span class="fc" id="L89">                        getActivity(),</span>
+                        R.layout.list_item_personal_data,
+                        R.id.list_item_pData_textview,
+                        listItems);
+
+<span class="fc" id="L94">        View rootView = inflater.inflate(R.layout.fragment_account, container, false);</span>
+
+<span class="fc" id="L96">        ListView personListView = (ListView) rootView.findViewById(R.id.listViewAccount);</span>
+<span class="fc" id="L97">        personListView.setAdapter(adapter);</span>
+<span class="fc" id="L98">        personListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {</span>
+
+            public void onItemClick(AdapterView&lt;?&gt; parent, View view, int position, long id) {
+                //this is expecting the &quot;change password button&quot; to be the last list item,
+                // not the best solution but works for the moment
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">                if (position == listItems.size() - 1) {</span>
+                    try {
+<span class="fc" id="L105">                        Fragment fragment = ChangePasswordFragment.class.newInstance();</span>
+                        //open the new Fragment
+<span class="fc" id="L107">                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();</span>
+<span class="fc" id="L108">                        FragmentTransaction ft = fragmentManager.beginTransaction();</span>
+<span class="fc" id="L109">                        ft.replace(R.id.flContent, fragment).addToBackStack(&quot;tag&quot;).commit();</span>
+<span class="fc" id="L110">                        getActivity().setTitle(&quot;Passwort ändern&quot;);</span>
+<span class="nc" id="L111">                    } catch (Exception e) {</span>
+<span class="nc" id="L112">                        e.printStackTrace();</span>
+<span class="pc" id="L113">                    }</span>
+
+                } else {
+<span class="nc" id="L116">                    new AlertDialog.Builder(getActivity())</span>
+                            //.setIcon(R.drawable.[...])
+<span class="nc" id="L118">                            .setTitle(R.string.hint)</span>
+<span class="nc" id="L119">                            .setPositiveButton(R.string.ok,</span>
+<span class="nc" id="L120">                                    new DialogInterface.OnClickListener() {</span>
+                                        public void onClick(DialogInterface dialog, int whichButton) {
+<span class="nc" id="L122">                                        }</span>
+                                    }
+<span class="nc" id="L124">                            ).setMessage(R.string.hint_message_text)</span>
+<span class="nc" id="L125">                            .show();</span>
+                }
+
+<span class="fc" id="L128">            }</span>
+        });
+
+<span class="fc" id="L131">        return rootView;</span>
+    }
+
+
+    /**
+     * method is called when after the Fragment is created
+     * @param view
+     * @param savedInstanceState
+     */
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+<span class="fc" id="L142">        super.onViewCreated(view, savedInstanceState);</span>
+
+<span class="fc" id="L144">    }</span>
+
+    /**
+     * helping function to fill field data
+     * @return
+     */
+    private ArrayList&lt;String&gt; insuredData(){
+<span class="fc" id="L151">        ArrayList&lt;String&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L152">        list.add(getPersonalData());</span>
+<span class="fc" id="L153">        list.add(&quot;Felddaten:\n&quot; + &quot;Anzahl Felder: XX\n&quot; + &quot;Felder Gesamtfläche: XXXX ha&quot;);</span>
+<span class="fc" id="L154">        return list;</span>
+    }
+
+    /**
+     * helping function for the reviewer
+     * @return
+     */
+    private ArrayList&lt;String&gt; expertData(){
+<span class="fc" id="L162">        ArrayList&lt;String&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L163">        list.add(getPersonalData());</span>
+<span class="fc" id="L164">        return list;</span>
+    }
+
+    /**
+     * helping function for adding personal data
+     * @return
+     */
+    private String getPersonalData(){
+<span class="fc" id="L172">        StringBuilder s = new StringBuilder();</span>
+<span class="fc" id="L173">        s.append(getString(R.string.personal_data) + &quot;\n&quot;);</span>
+<span class="fc" id="L174">        s.append(getString(R.string.name) + p.getFullName() + &quot;\n&quot;);</span>
+<span class="fc" id="L175">        s.append(getString(R.string.adress) + p.getAdresse() + &quot;\n&quot;);</span>
+<span class="fc" id="L176">        s.append(getString(R.string.role) + extras.getString(&quot;role&quot;) + &quot;\n&quot;);</span>
+<span class="fc" id="L177">        s.append(getString(R.string.id) + p.getId());</span>
+<span class="fc" id="L178">        return s.toString();</span>
+    }
+
+    /**
+     * android resuming function
+     */
+    @Override
+    public void onResume() {
+<span class="fc" id="L186">        super.onResume();</span>
+<span class="fc" id="L187">        getActivity().setTitle(&quot;Account&quot;);</span>
+<span class="fc" id="L188">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span>Generated by the Android Gradle plugin 2.3.3</div></body></html>

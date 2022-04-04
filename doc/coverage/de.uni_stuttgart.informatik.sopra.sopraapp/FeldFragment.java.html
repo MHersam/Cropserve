@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>FeldFragment.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debugAndroidTest</a> &gt; <a href="index.source.html" class="el_package">de.uni_stuttgart.informatik.sopra.sopraapp</a> &gt; <span class="el_source">FeldFragment.java</span></div><h1>FeldFragment.java</h1><pre class="source lang-java linenums">package de.uni_stuttgart.informatik.sopra.sopraapp;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
+import android.widget.TextView;
+import android.widget.Toast;
+import java.lang.Integer;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import static de.uni_stuttgart.informatik.sopra.sopraapp.FeldErfInfoScreen.marker;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity.drawPolygons;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity.location;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity.polygons;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity.userId;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.MyExpandableListAdapter.feldID;
+
+
+/**
+ * Class takes care of the fields
+ * Handles editing and adding new fields
+ *
+ * @author Patrick Koss
+ * @author Sarah Gutierrez Munoz
+ * @author Michael Hersam
+ */
+public class FeldFragment extends Fragment {
+
+    ExpandableListAdapter listAdapter;
+    ExpandableListView expListView;
+    public static List&lt;String&gt; listDataHeader;
+    HashMap&lt;String, List&lt;String&gt;&gt; listDataChild;
+    public static int feldCounter;
+
+    /**
+     * constructor
+     */
+<span class="fc" id="L55">    public FeldFragment() {</span>
+        // Required empty public constructor
+<span class="fc" id="L57">    }</span>
+
+    /**
+     * Called when the activity is first created.
+     */
+    public void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L63">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L64">    }</span>
+
+
+    /**
+     * method create the view when fragment is called first time
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        // Inflate the layout for this fragment
+<span class="fc" id="L80">        return inflater.inflate(R.layout.fragment_feld, container, false);</span>
+    }
+
+
+    /**
+     * method sets up the view after it is created
+     *
+     * @param view
+     * @param savedInstanceState
+     */
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+<span class="fc" id="L92">        super.onViewCreated(view, savedInstanceState);</span>
+
+<span class="fc" id="L94">        feldID = -1;</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        for(int i=0;i&lt;polygons.size();i++){</span>
+<span class="fc" id="L96">            polygons.get(i).setClickable(false);</span>
+        }
+<span class="fc" id="L98">        EditFeld.marker.removeAll(EditFeld.marker);</span>
+<span class="fc" id="L99">        FeldErfInfoScreen.marker.removeAll(FeldErfInfoScreen.marker);</span>
+<span class="fc" id="L100">        drawPolygons(getActivity().getApplicationContext());</span>
+
+<span class="fc" id="L102">        TextView view1 = getActivity().findViewById(R.id.field_view);</span>
+<span class="fc" id="L103">        view1.setBackgroundColor(Color.WHITE);</span>
+
+
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        if (MainActivity.location.getVisibility() == View.VISIBLE) {</span>
+<span class="fc" id="L107">            location.setVisibility(View.INVISIBLE);</span>
+        }
+
+        // get the ListView for displaying fields
+<span class="fc" id="L111">        expListView = getActivity().findViewById(R.id.lvExp);</span>
+<span class="fc" id="L112">        expListView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);</span>
+
+        // preparing list data
+<span class="fc" id="L115">        prepareListData();</span>
+
+<span class="fc" id="L117">        listAdapter = new MyExpandableListAdapter(getActivity(), listDataHeader, listDataChild);</span>
+
+        // setting list adapter
+<span class="fc" id="L120">        expListView.setAdapter(listAdapter);</span>
+
+        //long-click for deleting an item
+<span class="fc" id="L123">        expListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {</span>
+            @Override
+            public boolean onItemLongClick(AdapterView&lt;?&gt; parent, View view, int position, long id) {
+<span class="fc" id="L126">                final int listPos = position;</span>
+<span class="fc" id="L127">                int itemType = ExpandableListView.getPackedPositionType(id);</span>
+
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">                if (itemType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {</span>
+                    //no long click on child
+<span class="nc" id="L131">                    return false;</span>
+
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">                } else if (itemType == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {</span>
+<span class="fc" id="L134">                    position = ExpandableListView.getPackedPositionGroup(id);</span>
+
+<span class="fc" id="L136">                    final String clickedItem = getListDataHeader().get(position).toString();</span>
+
+                    //do your per-group callback here
+<span class="fc" id="L139">                    AlertDialog.Builder alertDelete = new AlertDialog.Builder(getActivity());</span>
+<span class="fc" id="L140">                    alertDelete.setTitle(R.string.del_feld);</span>
+                    //string formatting for language support
+<span class="fc" id="L142">                    final Resources res = getResources();</span>
+<span class="fc" id="L143">                    String text = res.getString(R.string.del_confirm1, clickedItem);</span>
+<span class="fc" id="L144">                    alertDelete.setMessage(text);</span>
+
+                    //cancel deleting
+<span class="fc" id="L147">                    alertDelete.setNegativeButton(R.string.button_no, new DialogInterface.OnClickListener() {</span>
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int btn) {
+<span class="fc" id="L150">                            getActivity().getFragmentManager().popBackStack(); //go back</span>
+<span class="fc" id="L151">                        }</span>
+                    });
+
+                    //on the way to delete case
+<span class="fc" id="L155">                    alertDelete.setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {</span>
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int btn2) {
+<span class="fc" id="L158">                            AlertDialog.Builder alertAssure = new AlertDialog.Builder(getActivity());</span>
+<span class="fc" id="L159">                            alertAssure.setTitle(getString(R.string.del_feld));</span>
+                            //string formatting for language support
+<span class="fc" id="L161">                            String text1 = res.getString(R.string.del_confirm2, clickedItem);</span>
+<span class="fc" id="L162">                            alertAssure.setMessage(text1);</span>
+                            /*ask for confirmation*/
+                            //no, abort
+<span class="fc" id="L165">                            alertAssure.setNegativeButton(R.string.button_no, new DialogInterface.OnClickListener() {</span>
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int btn3) {
+<span class="fc" id="L168">                                    getActivity().getFragmentManager().popBackStack(); //go back</span>
+<span class="fc" id="L169">                                }</span>
+                            });
+                            //yes, continue
+<span class="fc" id="L172">                            alertAssure.setPositiveButton(getString(R.string.button_del), new DialogInterface.OnClickListener() {</span>
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int btn4) {
+<span class="fc" id="L175">                                    String str = listDataHeader.get(listPos);</span>
+<span class="fc" id="L176">                                    feldID = Integer.parseInt(str.split(&quot;#&quot;)[1]);</span>
+<span class="fc" id="L177">                                    Log.e(&quot;test&quot;, String.valueOf(feldID));</span>
+<span class="fc" id="L178">                                    Log.e(&quot;test&quot;, str);</span>
+<span class="fc" id="L179">                                    boolean mitVertrag = true;</span>
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">                                    if (str.equals(getString(R.string.feldOhneVertrag) + str.split(&quot;#&quot;)[1]))</span>
+<span class="nc" id="L181">                                        mitVertrag = false;</span>
+<span class="fc" id="L182">                                    DatenbankDaten db = new DatenbankDaten(getActivity().getApplicationContext());</span>
+<span class="fc" id="L183">                                    db.open();</span>
+                                    /*removing the selected item from database*/
+<span class="fc" id="L185">                                    Feld feld = null;</span>
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">                                    if (mitVertrag) feld = db.getFeldById(feldID);</span>
+<span class="pc bpc" id="L187" title="1 of 2 branches missed.">                                    if (mitVertrag) db.removeFeld(feld);</span>
+<span class="fc" id="L188">                                    feldID = -1;</span>
+<span class="fc" id="L189">                                    listDataHeader.remove(listPos);</span>
+<span class="fc" id="L190">                                    FragmentManager fm = getActivity().getSupportFragmentManager();</span>
+<span class="fc" id="L191">                                    FeldFragment nam = new FeldFragment();</span>
+<span class="fc" id="L192">                                    FragmentTransaction ft = fm.beginTransaction();</span>
+<span class="fc" id="L193">                                    ft.replace(R.id.flContent, nam).addToBackStack(&quot;feld_tag&quot;).commit();</span>
+                                    //db.close();
+                                    //display confirmation toast
+<span class="fc" id="L196">                                    String textToast = res.getString(R.string.delete_toast, clickedItem);</span>
+<span class="fc" id="L197">                                    Toast.makeText(getContext(), textToast, Toast.LENGTH_SHORT).show();</span>
+<span class="fc" id="L198">                                }</span>
+                            });
+<span class="fc" id="L200">                            alertAssure.show();</span>
+<span class="fc" id="L201">                        }</span>
+                    });
+                    //show dialogue
+<span class="fc" id="L204">                    alertDelete.show();</span>
+<span class="fc" id="L205">                    return true; //true if we consumed the click, false if not</span>
+
+                } else {
+                    // null item; we don't consume the click
+<span class="nc" id="L209">                    return false;</span>
+                }
+            }
+        });
+
+        /*Creating a new field*/
+<span class="fc" id="L215">        Button feldReg = getView().findViewById(R.id.freg_button);</span>
+        //Button for opening the fragment for putting in new fields
+<span class="fc" id="L217">        feldReg.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="fc" id="L220">                FragmentManager fm = getActivity().getSupportFragmentManager();</span>
+<span class="fc" id="L221">                FeldErfInfoScreen nam = new FeldErfInfoScreen();</span>
+<span class="fc" id="L222">                FragmentTransaction ft = fm.beginTransaction();</span>
+<span class="fc" id="L223">                ft.replace(R.id.flContent, nam).addToBackStack(&quot;feld_tag&quot;).commit();</span>
+<span class="fc" id="L224">            }</span>
+        });
+
+<span class="fc" id="L227">        marker.removeAll(marker);</span>
+<span class="fc" id="L228">    }</span>
+
+    /**
+     * prepares list data for Feld-list
+     */
+    private void prepareListData() {
+<span class="fc" id="L234">        listDataHeader = new ArrayList&lt;String&gt;();</span>
+<span class="fc" id="L235">        listDataChild = new HashMap&lt;String, List&lt;String&gt;&gt;();</span>
+<span class="fc" id="L236">        Integer myUser = userId;</span>
+
+        // Adding Header Data - Field Names
+<span class="fc" id="L239">        DatenbankDaten pullFieldData = new DatenbankDaten(getActivity().getApplicationContext());</span>
+<span class="fc" id="L240">        ArrayList&lt;Integer&gt; fieldIDs = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L241">        pullFieldData.open();</span>
+
+        //get all existing IDs
+<span class="fc bfc" id="L244" title="All 2 branches covered.">        for (Feld feld : pullFieldData.getFeld()) {</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">            if (myUser &gt;= 0) {</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">                if (myUser.equals(feld.getVertrag().getPerson().getId())) {</span>
+<span class="fc" id="L247">                    fieldIDs.add(feld.getId());</span>
+                }
+            } else {
+<span class="fc" id="L250">                fieldIDs.add(feld.getId());</span>
+            }
+        }
+
+        //add all IDs to listDataHeader
+<span class="fc bfc" id="L255" title="All 2 branches covered.">        for (int x = 0; x &lt; fieldIDs.size(); x++) {</span>
+<span class="fc" id="L256">            listDataHeader.add(getString(R.string.list_data_header) + fieldIDs.get(x).toString());</span>
+        }
+
+
+        List&lt;String&gt; sublist;
+        //fill ListView with additional information of the field
+<span class="fc bfc" id="L262" title="All 2 branches covered.">        for (int i = 0; i &lt; fieldIDs.size(); i++) {</span>
+            // Adding child data (art, flaeche, region ,vertrag)
+<span class="fc" id="L264">            sublist = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L265">            sublist.add(getString(R.string.l_art)+ &quot; &quot; + pullFieldData.getFeldById(fieldIDs.get(i)).getArt() + &quot;\n&quot;);</span>
+<span class="fc" id="L266">            sublist.add(getString(R.string.l_fläche) + &quot; &quot;+ pullFieldData.getFeldById(fieldIDs.get(i)).getFlaeche() + &quot; &quot; + getString(R.string.l_maß) + &quot;\n&quot;);</span>
+<span class="fc" id="L267">            sublist.add(getString(R.string.l_stadt) + &quot; &quot;+ pullFieldData.getFeldById(fieldIDs.get(i)).getRegion().getStadt() + &quot;\n&quot;);</span>
+<span class="fc" id="L268">            sublist.add(getString(R.string.l_landkreis)+ &quot; &quot; + pullFieldData.getFeldById(fieldIDs.get(i)).getRegion().getLandkreis() + &quot;\n&quot;);</span>
+<span class="fc" id="L269">            sublist.add(getString(R.string.l_bland) + &quot; &quot;+ pullFieldData.getFeldById(fieldIDs.get(i)).getRegion().getBundesland() + &quot;\n&quot;);</span>
+<span class="fc" id="L270">            sublist.add(getString(R.string.l_land) + &quot; &quot;+ pullFieldData.getFeldById(fieldIDs.get(i)).getRegion().getLand() + &quot;\n&quot;);</span>
+<span class="fc" id="L271">            sublist.add(getString(R.string.l_vertrag)+ &quot; &quot; + pullFieldData.getFeldById(fieldIDs.get(i)).getVertrag().getArt() + &quot;\n&quot;);</span>
+<span class="fc" id="L272">            sublist.add(getString(R.string.chosen_user) + &quot; &quot; + pullFieldData.getFeldById(fieldIDs.get(i)).getVertrag().getPerson().getFullName() + &quot;\n&quot;);</span>
+<span class="fc" id="L273">            listDataChild.put(listDataHeader.get(i), sublist);</span>
+        }
+<span class="fc" id="L275">        pullFieldData.close();</span>
+<span class="fc" id="L276">    }</span>
+
+    public static List&lt;String&gt; getListDataHeader() {
+<span class="fc" id="L279">        return listDataHeader;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span>Generated by the Android Gradle plugin 2.3.3</div></body></html>

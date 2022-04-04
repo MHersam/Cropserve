@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ListItemDetail.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debugAndroidTest</a> &gt; <a href="index.source.html" class="el_package">de.uni_stuttgart.informatik.sopra.sopraapp</a> &gt; <span class="el_source">ListItemDetail.java</span></div><h1>ListItemDetail.java</h1><pre class="source lang-java linenums">package de.uni_stuttgart.informatik.sopra.sopraapp;
+
+
+import android.Manifest;
+import android.app.Dialog;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PolygonOptions;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
+import static de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity.drawPolygons;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity.mMap;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity.polygons;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity.userId;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.SchadenErfassen.punktInPolygon;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.SchadensfallFragment.schadenID;
+
+/**
+ * class that sets the content view
+ * for after clicking on an item in the list of registered damages
+ *
+ * @author Patrick Koss
+ * @author Sarah Gutierrez Munoz
+ * @author Michael Hersam
+ */
+public class ListItemDetail extends Fragment {
+
+    //attributes
+    ArrayList&lt;String&gt; attList;
+<span class="fc" id="L59">    public Region reg2 = new Region(&quot;S&quot;, &quot;S&quot;, &quot;S&quot;, &quot;S&quot;, 1);</span>
+    String schadensart ;
+<span class="fc" id="L61">    String gutachter = &quot;&quot;;</span>
+    TextView datum;
+    TextView land2;
+    TextView bland2;
+    TextView landkreis2;
+    TextView stadt2;
+<span class="fc" id="L67">    public static ArrayList&lt;Marker&gt; marker = new ArrayList&lt;Marker&gt;();</span>
+    String[] bilder;
+<span class="fc" id="L69">    Polygon polygon = polygon = mMap.addPolygon(new PolygonOptions()</span>
+<span class="fc" id="L70">            .add(new LatLng(0,0))</span>
+<span class="fc" id="L71">            .fillColor(Color.parseColor(&quot;#660000ff&quot;))</span>
+<span class="fc" id="L72">            .strokeColor(Color.parseColor(&quot;#660000ff&quot;))</span>
+<span class="fc" id="L73">            .strokeWidth(5));</span>
+
+    /**
+     * construcktor
+     */
+<span class="fc" id="L78">    public ListItemDetail() {</span>
+        // Required empty public constructor
+<span class="fc" id="L80">    }</span>
+
+
+    /**
+     * method is called when fragment is created
+     * @param savedInstanceState
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L89">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L90">    }</span>
+
+    /**
+     * method is called when the fragment is created
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+<span class="fc" id="L103">        return inflater.inflate(R.layout.fragment_list_item_detail, container, false);</span>
+    }
+
+    /**
+     * method is called when the fragment is created and it initialize the fragment
+     * @param view
+     * @param savedInstanceState
+     */
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+<span class="fc" id="L113">        super.onViewCreated(view, savedInstanceState);</span>
+
+<span class="fc bfc" id="L115" title="All 2 branches covered.">        for(int i=0;i&lt;polygons.size();i++){</span>
+<span class="fc" id="L116">            polygons.get(i).setClickable(false);</span>
+        }
+
+        //background view
+<span class="fc" id="L120">        ListView dmgAtt = getActivity().findViewById(R.id.dmgAttr_List);</span>
+<span class="fc" id="L121">        dmgAtt.setBackgroundColor(Color.WHITE);</span>
+
+        //prepare list data
+<span class="fc" id="L124">        getDmgAttribute();</span>
+
+        //fill List, set adapter
+<span class="fc" id="L127">        ArrayAdapter&lt;String&gt; dmgAttAdapter = new ArrayAdapter&lt;String&gt;(getContext(), R.layout.list_item_dmg_attribute, attList);</span>
+<span class="fc" id="L128">        dmgAtt.setAdapter(dmgAttAdapter);</span>
+
+
+        //user is getting ask if he want to allow the location permission
+<span class="fc" id="L132">        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);</span>
+
+        //button for editing dmg info
+<span class="fc" id="L135">        ImageButton edDmgInfo = getActivity().findViewById(R.id.editDmgInfo);</span>
+
+        /*
+         * listener for Edit Dmg Info-Btn
+         * opens Edit-dialogue which allows to change and save information
+         */
+<span class="fc" id="L141">        edDmgInfo.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+                // custom dialog
+<span class="fc" id="L145">                final Dialog dialog = new Dialog(getContext());</span>
+<span class="fc" id="L146">                dialog.setContentView(R.layout.dialogsffragment);</span>
+<span class="fc" id="L147">                dialog.setTitle(&quot;Title...&quot;);</span>
+
+                //dialog window headline
+<span class="fc" id="L150">                TextView dg_header = getActivity().findViewById(R.id.dg_descr2);</span>
+
+                /*spinner initialisation*/
+
+                //init spinner #1 Schadensart
+<span class="fc" id="L155">                final Spinner spinnerSchArt = dialog.findViewById(R.id.spinnerSchArt);</span>
+                // Create an ArrayAdapter using the string array from res/values/strings and a default spinner layout
+<span class="fc" id="L157">                ArrayAdapter&lt;CharSequence&gt; adapter = ArrayAdapter.createFromResource(getContext(), R.array.schadens_arten, android.R.layout.simple_spinner_item);</span>
+                // Specify the layout to use when the list of choices appears
+<span class="fc" id="L159">                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);</span>
+                // Apply the adapter to the spinner
+<span class="fc" id="L161">                spinnerSchArt.setAdapter(adapter);</span>
+
+                //init spinner #2 Gutachter
+<span class="fc" id="L164">                final Spinner spinnerSchGutachter = dialog.findViewById(R.id.spinnerSchGutachter);</span>
+<span class="fc" id="L165">                ArrayAdapter&lt;String&gt; adapter2 = new ArrayAdapter&lt;String&gt;(getContext(), android.R.layout.simple_spinner_item, getGutachterNames());</span>
+<span class="fc" id="L166">                adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);</span>
+<span class="fc" id="L167">                spinnerSchGutachter.setAdapter(adapter2);</span>
+<span class="fc" id="L168">                spinnerSchArt.setSelection(1);</span>
+
+                /*button init */
+
+<span class="fc" id="L172">                Button cancelBtn = dialog.findViewById(R.id.btn_abbrechen);</span>
+                //simply cancel input of information upon click
+<span class="fc" id="L174">                cancelBtn.setOnClickListener(new View.OnClickListener() {</span>
+                    @Override
+                    public void onClick(View v) {
+<span class="fc" id="L177">                        dialog.dismiss();</span>
+<span class="fc" id="L178">                    }</span>
+                });
+
+<span class="fc" id="L181">                Button okBtn = dialog.findViewById(R.id.button_ok);</span>
+                //SAVES the changed settings after clicking OK (no extra save button!)
+                //all saving code belongs here ^-^
+<span class="fc" id="L184">                okBtn.setOnClickListener(new View.OnClickListener() {</span>
+                    @Override
+                    public void onClick(View view) {
+<span class="fc" id="L187">                        schadensart = spinnerSchArt.getSelectedItem().toString();</span>
+<span class="fc" id="L188">                        gutachter = spinnerSchGutachter.getSelectedItem().toString();</span>
+<span class="fc" id="L189">                        land2 = dialog.findViewById(R.id.land2_text);</span>
+<span class="fc" id="L190">                        bland2 =dialog.findViewById(R.id.bland2_text);</span>
+<span class="fc" id="L191">                        landkreis2 =dialog.findViewById(R.id.lkreis2_text);</span>
+<span class="fc" id="L192">                        stadt2 =dialog.findViewById(R.id.stadt2_text);</span>
+
+<span class="fc" id="L194">                        DatenbankDaten db = new DatenbankDaten(getActivity().getApplicationContext());</span>
+<span class="fc" id="L195">                        db.open();</span>
+
+                        //check if the information is filled in
+<span class="pc bpc" id="L198" title="3 of 8 branches missed.">                        if (!land2.getText().toString().matches(&quot;&quot;) || !bland2.getText().toString().matches(&quot;&quot;) || !landkreis2.getText().toString().matches(&quot;&quot;) || !stadt2.getText().toString().matches(&quot;&quot;)) {</span>
+<span class="fc" id="L199">                            reg2 = new Region(landkreis2.getText().toString(), land2.getText().toString(), bland2.getText().toString(), stadt2.getText().toString(), 1);</span>
+<span class="fc" id="L200">                            Region[] regions = db.getRegion();</span>
+                            //check if there is already an existing region in the database
+<span class="fc" id="L202">                            int counter = 0;</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">                            for (int i = 0; i &lt; regions.length; i++) {</span>
+<span class="pc bpc" id="L204" title="1 of 4 branches missed.">                                if (regions[i].getStadt().equals(stadt2.getText().toString()) &amp;&amp; regions[i].getBundesland().equals(bland2.getText().toString()))</span>
+<span class="fc" id="L205">                                    counter++;</span>
+                            }
+                            //if not add new region
+<span class="fc bfc" id="L208" title="All 2 branches covered.">                            if (counter == 0)</span>
+<span class="fc" id="L209">                                db.addRegion(reg2);</span>
+
+                            //TODO Bilder: btn ist da, needs implementation (+saving) though
+
+                            //close dialog
+<span class="fc" id="L214">                            dialog.dismiss();</span>
+
+                            //check if damage case area is actually an area
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">                            if (marker.size() &gt;= 3) {</span>
+                                //check if the additional information was added
+                                /*if (reg2.getLand().equals(&quot;S&quot;) || reg2.getStadt().equals(&quot;S&quot;) || reg2.getBundesland().equals(&quot;S&quot;) || reg2.getLandkreis().equals(&quot;S&quot;)) {
+                                    Toast.makeText(getContext(), R.string.info_missing2, Toast.LENGTH_LONG).show();
+                                } else { */
+                                    //TODO put in values from camera
+<span class="fc" id="L223">                                    bilder = new String[1];</span>
+<span class="fc" id="L224">                                    bilder[0] = &quot;bilder&quot;;</span>
+
+                                    double flaeche;
+<span class="fc" id="L227">                                    flaeche =  berechnePolygonFlaeche(marker);</span>
+
+                                    //create coordinates for the field, first and last latitude/longitude has to be the same
+<span class="fc" id="L230">                                    LatLng coordinates[] = new LatLng[marker.size() + 1];</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">                                    for (int i = 0; i &lt; marker.size(); i++) {</span>
+<span class="fc" id="L232">                                        coordinates[i] = marker.get(i).getPosition();</span>
+                                    }
+<span class="fc" id="L234">                                    coordinates[marker.size()] = marker.get(0).getPosition();</span>
+                                    //get all fields
+<span class="fc" id="L236">                                    Feld[] felder = db.getFeld();</span>
+<span class="fc" id="L237">                                    ArrayList&lt;Feld&gt; userFelder = new ArrayList&lt;Feld&gt;();</span>
+                                    //search for the fields the user has registered
+<span class="fc bfc" id="L239" title="All 2 branches covered.">                                    for (int i = 0; i &lt; felder.length; i++) {</span>
+<span class="pc bpc" id="L240" title="1 of 2 branches missed.">                                        if(userId&gt;=0){</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">                                            if (userId == felder[i].getVertrag().getPerson().getId())</span>
+<span class="fc" id="L242">                                                userFelder.add(felder[i]);</span>
+                                        }
+                                        else{
+<span class="nc" id="L245">                                            userFelder.add(felder[i]);</span>
+                                        }
+                                    }
+<span class="fc" id="L248">                                    Feld feld = null;</span>
+                                    //we need to check if the coordinates of the damage case are in one of the registered fields
+                                    //in this variable is saved how often coordinates of the damage case are in the field
+<span class="fc" id="L251">                                    int coordinateCounter = 0;</span>
+                                    //to avoid that one coordinate is in one field and one coordinate is in another one we need to save the counter after each loop of the second loop
+<span class="fc" id="L253">                                    List&lt;Integer&gt; merkerList = new ArrayList&lt;Integer&gt;();</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">                                    for (int i = 0; i &lt; userFelder.size(); i++) {</span>
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">                                        for (int j = 0; j &lt; coordinates.length - 1; j++) {</span>
+<span class="pc bpc" id="L256" title="1 of 2 branches missed.">                                            if (punktInPolygon(userFelder.get(i).getKoordinaten(), coordinates[j]) == 1) {</span>
+<span class="nc" id="L257">                                                coordinateCounter++;</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">                                            } else if (punktInPolygon(userFelder.get(i).getKoordinaten(), coordinates[j]) == 0) {</span>
+<span class="fc" id="L259">                                                coordinateCounter++;</span>
+                                            } else break;
+                                        }
+<span class="fc" id="L262">                                        merkerList.add(coordinateCounter);</span>
+<span class="pc bpc" id="L263" title="1 of 2 branches missed.">                                        if (coordinateCounter == coordinates.length - 1) feld = userFelder.get(i);</span>
+<span class="fc" id="L264">                                            coordinateCounter = 0;</span>
+                                    }
+                                    //Log.i(&quot;cea&quot;, merkerList.get(felder.length-2).toString());
+                                    //now the list has to be sorted to get the largest element on the last position
+
+<span class="fc" id="L269">                                    Collections.sort(merkerList);</span>
+                                    //if the last element in the sortedList merkerList is the number of total coordinates of the damage case, save it
+<span class="pc bpc" id="L271" title="1 of 2 branches missed.">                                    if (merkerList.get(userFelder.size() - 1) == coordinates.length-1) {</span>
+                                        //get the matching region from the database
+<span class="nc bnc" id="L273" title="All 2 branches missed.">                                        for (int i = 0; i &lt; db.getRegion().length; i++) {</span>
+<span class="nc bnc" id="L274" title="All 4 branches missed.">                                            if (db.getRegion()[i].getStadt().equals(reg2.getStadt()) &amp;&amp; db.getRegion()[i].getBundesland().equals(reg2.getBundesland())) {</span>
+<span class="nc" id="L275">                                                db.updateSchadensfall(new Schadensfall(schadensart, feld, coordinates, getString(R.string.dmg_status), db.getRegion()[i], Calendar.getInstance().getTime().toString(), bilder, schadenID, flaeche, db.getGutachterById(1)));</span>
+                                            }
+                                        }
+                                        //reset the static variable to avoid anomalies
+                                        //schadenID = -1;
+<span class="nc" id="L280">                                        drawPolygons(getActivity().getApplicationContext());</span>
+<span class="nc" id="L281">                                        marker.removeAll(marker);</span>
+
+                                        //go back to the previous fragment
+<span class="nc" id="L284">                                        FragmentManager fm = getActivity().getSupportFragmentManager();</span>
+<span class="nc" id="L285">                                        SchadensfallFragment schadensfallFragment = new SchadensfallFragment();</span>
+<span class="nc" id="L286">                                        FragmentTransaction ft = fm.beginTransaction();</span>
+<span class="nc" id="L287">                                        ft.replace(R.id.flContent, schadensfallFragment).addToBackStack(&quot;tag&quot;).commit();</span>
+<span class="nc" id="L288">                                    } else {</span>
+<span class="fc" id="L289">                                        Toast.makeText(getContext(), getString(R.string.coordinate_missing), Toast.LENGTH_SHORT).show();</span>
+                                    }
+                                //}
+<span class="fc" id="L292">                            } else</span>
+<span class="nc" id="L293">                                Toast.makeText(getContext(), getString(R.string.marker_missing), Toast.LENGTH_SHORT).show();</span>
+
+<span class="fc" id="L295">                        } else {</span>
+<span class="fc" id="L296">                            Toast.makeText(getContext(), getString(R.string.info_missing3), Toast.LENGTH_SHORT).show();</span>
+                        }
+<span class="fc" id="L298">                        db.close();</span>
+<span class="fc" id="L299">                    }</span>
+                });
+
+                //open dialogue on Button click
+<span class="fc" id="L303">                dialog.show();</span>
+<span class="fc" id="L304">            }</span>
+        });
+
+        //if you hold the marker you can drag and drop it to new position
+<span class="fc" id="L308">        mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {</span>
+            @Override
+            public void onMarkerDragStart(Marker marker) {
+
+<span class="fc" id="L312">            }</span>
+
+            @Override
+            public void onMarkerDrag(Marker markers) {
+<span class="nc" id="L316">                markers.setPosition(markers.getPosition());</span>
+<span class="nc" id="L317">                polygon.remove();</span>
+<span class="nc" id="L318">                ArrayList&lt;LatLng&gt; triangle = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L319" title="All 2 branches missed.">                for(int i=0; i&lt;marker.size();i++){</span>
+<span class="nc" id="L320">                    triangle.add(marker.get(i).getPosition());</span>
+                }
+<span class="nc" id="L322">                triangle.add(triangle.get(0));</span>
+<span class="nc" id="L323">                polygon = mMap.addPolygon(new PolygonOptions()</span>
+<span class="nc" id="L324">                        .addAll(triangle)</span>
+<span class="nc" id="L325">                        .fillColor(Color.parseColor(&quot;#66ff0000&quot;))</span>
+<span class="nc" id="L326">                        .strokeColor(Color.parseColor(&quot;#66ff0000&quot;))</span>
+<span class="nc" id="L327">                        .strokeWidth(5));</span>
+<span class="nc" id="L328">                triangle.removeAll(triangle);</span>
+<span class="nc" id="L329">            }</span>
+
+            @Override
+            public void onMarkerDragEnd(Marker marker) {
+
+<span class="fc" id="L334">            }</span>
+        });
+
+<span class="fc" id="L337">        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {</span>
+
+            @Override
+            public boolean onMarkerClick(Marker mark) {
+<span class="fc" id="L341">                marker.remove(mark);</span>
+<span class="fc" id="L342">                mark.remove();</span>
+<span class="fc" id="L343">                polygon.remove();</span>
+<span class="fc" id="L344">                ArrayList&lt;LatLng&gt; triangle = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L345" title="All 2 branches covered.">                for(int i=0; i&lt;marker.size();i++){</span>
+<span class="fc" id="L346">                    triangle.add(marker.get(i).getPosition());</span>
+                }
+<span class="pc bpc" id="L348" title="1 of 2 branches missed.">                if(marker.size()!=0){</span>
+<span class="fc" id="L349">                    triangle.add(triangle.get(0));</span>
+<span class="fc" id="L350">                    polygon = mMap.addPolygon(new PolygonOptions()</span>
+<span class="fc" id="L351">                            .addAll(triangle)</span>
+<span class="fc" id="L352">                            .fillColor(Color.parseColor(&quot;#66ff0000&quot;))</span>
+<span class="fc" id="L353">                            .strokeColor(Color.parseColor(&quot;#66ff0000&quot;))</span>
+<span class="fc" id="L354">                            .strokeWidth(5));</span>
+<span class="fc" id="L355">                    triangle.removeAll(triangle);</span>
+                }
+<span class="fc" id="L357">                return true;</span>
+            }
+        });
+
+<span class="fc" id="L361">        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {</span>
+            @Override
+            public void onMapClick(LatLng latLng) {
+<span class="fc" id="L364">                marker.add(mMap.addMarker(new MarkerOptions()</span>
+<span class="fc" id="L365">                        .position(latLng)</span>
+<span class="fc" id="L366">                        .title(String.valueOf(marker.size() + 1))</span>
+<span class="fc" id="L367">                        .draggable(true)</span>
+                ));
+<span class="fc" id="L369">                polygon.remove();</span>
+<span class="fc" id="L370">                ArrayList&lt;LatLng&gt; triangle = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L371" title="All 2 branches covered.">                for (int i = 0; i &lt; marker.size(); i++) {</span>
+<span class="fc" id="L372">                    triangle.add(marker.get(i).getPosition());</span>
+                }
+<span class="fc" id="L374">                triangle.add(triangle.get(0));</span>
+<span class="fc" id="L375">                polygon = mMap.addPolygon(new PolygonOptions()</span>
+<span class="fc" id="L376">                        .addAll(triangle)</span>
+<span class="fc" id="L377">                        .fillColor(Color.parseColor(&quot;#66ff0000&quot;))</span>
+<span class="fc" id="L378">                        .strokeColor(Color.parseColor(&quot;#66ff0000&quot;))</span>
+<span class="fc" id="L379">                        .strokeWidth(5));</span>
+<span class="fc" id="L380">                triangle.removeAll(triangle);</span>
+<span class="fc" id="L381">            }</span>
+        });
+
+<span class="fc" id="L384">    }</span>
+
+
+    /**
+     * pulls data from database to fill ListView with every Schadensfall existing
+     */
+    public void getDmgAttribute() {
+        //list that holds list item strings/headers
+<span class="fc" id="L392">        attList = new ArrayList&lt;String&gt;();</span>
+
+<span class="fc" id="L394">        DatenbankDaten pullDmgAttributes = new DatenbankDaten(getActivity().getApplicationContext());</span>
+<span class="fc" id="L395">        pullDmgAttributes.open();</span>
+
+
+<span class="fc" id="L398">        attList.add(getString(R.string.l_s_art) + &quot; &quot; + pullDmgAttributes.getSchadensfallById(schadenID).getSchadensart() + &quot;\n&quot;);</span>
+<span class="fc" id="L399">        attList.add(getString(R.string.l_s_feld)+ &quot; &quot; + &quot;#&quot; + pullDmgAttributes.getSchadensfallById(schadenID).getFeld().getId() + &quot;, &quot;  + pullDmgAttributes.getSchadensfallById(schadenID).getFeld().getArt() + &quot;\n&quot;);</span>
+<span class="fc" id="L400">        attList.add(getString(R.string.l_s_status) + &quot; &quot;+ pullDmgAttributes.getSchadensfallById(schadenID).getStatus() + &quot;\n&quot;);</span>
+<span class="fc" id="L401">        attList.add(getString(R.string.l_s_loc) + &quot; &quot;+ pullDmgAttributes.getSchadensfallById(schadenID).getRegion().getBundesland() +&quot;, &quot; + pullDmgAttributes.getSchadensfallById(schadenID).getRegion().getStadt() + &quot;\n&quot;);</span>
+<span class="fc" id="L402">        attList.add(getString(R.string.l_s_rev) + &quot; &quot; + pullDmgAttributes.getSchadensfallById(schadenID).getGutachter().getFullName() + &quot;\n&quot;);</span>
+<span class="fc" id="L403">        attList.add(getString(R.string.l_s_date) + &quot; &quot; + pullDmgAttributes.getSchadensfallById(schadenID).getDatum() + &quot;\n&quot;);</span>
+<span class="fc" id="L404">        attList.add(getString(R.string.l_s_area) + &quot; &quot; + pullDmgAttributes.getSchadensfallById(schadenID).getFlaeche() + &quot; &quot; + getString(R.string.l_maß) + &quot;\n&quot;);</span>
+
+<span class="fc" id="L406">        pullDmgAttributes.close();</span>
+
+<span class="fc" id="L408">    }</span>
+
+
+    /**
+     * fetches all existing gutachter from data base
+     * @return ArrayList with all Gutachter names
+     */
+    public ArrayList&lt;String&gt; getGutachterNames() {
+<span class="fc" id="L416">        ArrayList&lt;String&gt; gaNames = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L417">        DatenbankDaten getGaName = new DatenbankDaten(getActivity().getApplicationContext());</span>
+<span class="fc" id="L418">        getGaName.open();</span>
+
+<span class="fc bfc" id="L420" title="All 2 branches covered.">        for(Gutachter g : getGaName.getGutachter()) {</span>
+<span class="fc" id="L421">            String name = g.getVorname() + &quot; &quot; + g.getNachname();</span>
+<span class="fc" id="L422">            gaNames.add(name);</span>
+        }
+<span class="fc" id="L424">        getGaName.close();</span>
+
+<span class="fc" id="L426">        return  gaNames;</span>
+
+    }
+
+
+    /*---------------------AREA CALCULATION-------------------*/
+    /*
+     * distance of two lng/lat points in kilometers
+     * Haversine formula
+     * @param lat1 latitude of 1st marker
+     * @param lng1 longitude of 1st marker
+     * @param lat2 latitude of 2nd marker
+     * @param lng2 longitude of 2nd marker
+     * @return double distance between two markers
+     */
+    public static double distFrom(double lat1, double lng1, double lat2, double lng2) {
+<span class="fc" id="L442">        double earthRadius = 6371.0; // kilometers (or 3958.75 miles)</span>
+<span class="fc" id="L443">        double dLat = Math.toRadians(lat2-lat1);</span>
+<span class="fc" id="L444">        double dLng = Math.toRadians(lng2-lng1);</span>
+<span class="fc" id="L445">        double sindLat = Math.sin(dLat / 2);</span>
+<span class="fc" id="L446">        double sindLng = Math.sin(dLng / 2);</span>
+<span class="fc" id="L447">        double a = Math.pow(sindLat, 2) + Math.pow(sindLng, 2)</span>
+<span class="fc" id="L448">                * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));</span>
+<span class="fc" id="L449">        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));</span>
+<span class="fc" id="L450">        double dist = earthRadius * c;</span>
+
+<span class="fc" id="L452">        return dist;</span>
+    }
+
+
+    /**
+     *
+     * @param marker
+     * @return
+     */
+    public double berechnePolygonFlaeche(ArrayList&lt;Marker&gt; marker) {
+<span class="fc" id="L462">        final int EARTH_RADIUS = 6371; //in km</span>
+<span class="fc" id="L463">        HashMap&lt;Marker, List&lt;Double&gt;&gt; coords = new HashMap&lt;&gt;();</span>
+
+
+<span class="fc bfc" id="L466" title="All 2 branches covered.">        for(Marker m : marker) {</span>
+<span class="fc" id="L467">            ArrayList&lt;Double&gt; xys = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L469">            double latitude = Double.valueOf(m.getPosition().latitude);</span>
+<span class="fc" id="L470">            double longitude = Double.valueOf(m.getPosition().longitude);</span>
+
+            //convert to radian
+<span class="fc" id="L473">            latitude = latitude * Math.PI/180;</span>
+<span class="fc" id="L474">            longitude = longitude * Math.PI/180;</span>
+
+            //convert with something similar to equirectangular projection
+<span class="fc" id="L477">            double x = EARTH_RADIUS * Math.sin(latitude) * Math.cos(longitude);</span>
+<span class="fc" id="L478">            double y = EARTH_RADIUS * Math.sin(latitude) * Math.sin(longitude);</span>
+            //double z = EARTH_RADIUS * Math.cos(latitude);
+
+            //double x = EARTH_RADIUS * Math.cos(latitude) * Math.cos(longitude);
+            //double y = EARTH_RADIUS * Math.cos(latitude) * Math.sin(longitude);
+            //double z = EARTH_RADIUS * Math.sin(latitude);
+
+            //Equirectangular projection (d0 and a0 are 0)
+            //double x = longitude; //x= (longitude-a0)*cos(d0)
+            //double y = latitude; //y =(latitude-d0)
+
+<span class="fc" id="L489">            xys.add(x);</span>
+<span class="fc" id="L490">            xys.add(y);</span>
+
+<span class="fc" id="L492">            coords.put(m, xys);</span>
+<span class="fc" id="L493">        }</span>
+
+<span class="fc" id="L495">        double flaeche = 0;</span>
+
+<span class="fc bfc" id="L497" title="All 2 branches covered.">        if(marker.size() == 3 ) {</span>
+            //side from first to second marker
+<span class="fc" id="L499">            double c = distFrom(marker.get(0).getPosition().latitude, marker.get(0).getPosition().longitude, marker.get(1).getPosition().latitude, marker.get(1).getPosition().latitude);</span>
+            //side from 2nd to third marker
+<span class="fc" id="L501">            double a = distFrom(marker.get(1).getPosition().latitude, marker.get(1).getPosition().longitude, marker.get(2).getPosition().latitude, marker.get(2).getPosition().latitude);</span>
+            //side from 3rd to 1st marker
+<span class="fc" id="L503">            double b = distFrom(marker.get(2).getPosition().latitude, marker.get(2).getPosition().longitude, marker.get(0).getPosition().latitude, marker.get(0).getPosition().latitude);</span>
+            //angle between c ( 1st side) and a (2nd side)
+<span class="fc" id="L505">            double cosB = (Math.pow(a,2) + Math.pow(c,2 ) - Math.pow(b, 2)) / (2 * a * c);</span>
+<span class="fc" id="L506">            double beta  = Math.acos(cosB);</span>
+
+<span class="fc" id="L508">            flaeche = round(((c * a * Math.sin(beta)) / 2), 4);</span>
+
+<span class="fc" id="L510">        } else {</span>
+
+        /*Gauss' area formula*/
+<span class="fc bfc" id="L513" title="All 2 branches covered.">            for (int a = 0; a &lt; marker.size() - 1; a++) {</span>
+<span class="fc" id="L514">                double x1 = coords.get(marker.get(a)).get(0);</span>
+<span class="fc" id="L515">                double y1 = coords.get(marker.get(a)).get(1);</span>
+
+<span class="fc" id="L517">                double x2 = coords.get(marker.get(a + 1)).get(0);</span>
+<span class="fc" id="L518">                double y2 = coords.get(marker.get(a + 1)).get(1);</span>
+
+
+<span class="fc" id="L521">                flaeche = flaeche + ((x1 * y2) - (y1 * x2));</span>
+            }
+
+            //last term contains first marker x,y again; multiply with last marker
+<span class="fc" id="L525">            flaeche += ((coords.get(marker.get(marker.size() - 1)).get(0) * coords.get(marker.get(0)).get(1))</span>
+<span class="fc" id="L526">                    - ((coords.get(marker.get(marker.size() - 1)).get(1)) * coords.get(marker.get(0)).get(0)));</span>
+
+
+<span class="fc" id="L529">            flaeche = round(Math.abs((flaeche/ 2.0)* EARTH_RADIUS), 4);</span>
+        }
+
+        //in km^2; * 100 to achieve hectare
+<span class="fc" id="L533">        double area = flaeche*100;</span>
+
+<span class="fc" id="L535">        return area;</span>
+    }
+
+
+    /**
+     * rounds a double (down) to a specified decimal place
+     *
+     * @param value the given double
+     * @param places number of decimals
+     * @return the rounded double
+     */
+    public static double round(double value, int places) {
+<span class="pc bpc" id="L547" title="1 of 2 branches missed.">        if (places &lt; 0) throw new IllegalArgumentException();</span>
+
+<span class="fc" id="L549">        BigDecimal bd = new BigDecimal(value);</span>
+<span class="fc" id="L550">        bd = bd.setScale(places, RoundingMode.HALF_DOWN);</span>
+<span class="fc" id="L551">        return bd.doubleValue();</span>
+    }
+
+}
+
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span>Generated by the Android Gradle plugin 2.3.3</div></body></html>

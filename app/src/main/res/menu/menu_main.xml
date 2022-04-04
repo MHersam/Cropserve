@@ -1,0 +1,39 @@
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_start"
+            android:icon="@mipmap/ic_map_start_icon"
+            android:title="@string/item_start" />
+        <item
+            android:id="@+id/nav_felder_fragment"
+            android:icon="@mipmap/ic_crop_icon"
+            android:title="@string/item_feld" />
+        <item
+            android:id="@+id/nav_schadensmeldungen_fragment"
+            android:icon="@android:drawable/stat_sys_warning"
+            android:title="@string/item_dmg" />
+        <item
+            android:id="@+id/nav_vertraege_fragment"
+            android:icon="@android:drawable/ic_input_get"
+            android:title="@string/item_contract" />
+        <item
+            android:id="@+id/nav_account_fragment"
+            android:icon="@mipmap/ic_user_icon"
+            android:title="@string/item_acc" />
+        <item
+            android:id="@+id/nav_hilfe_fragment"
+            android:icon="@mipmap/ic_acc_icon"
+            android:title="@string/item_help" />
+        <item
+            android:id="@+id/nav_appInfo_fragment"
+            android:icon="@mipmap/ic_sett_icon"
+            android:title="@string/item_app" />
+        <item
+            android:id="@+id/nav_logout_fragment"
+            android:icon="@android:drawable/ic_lock_power_off"
+            android:title="@string/item_logout" />
+    </group>
+
+</menu>

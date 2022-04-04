@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SearchResultsActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debugAndroidTest</a> &gt; <a href="index.source.html" class="el_package">de.uni_stuttgart.informatik.sopra.sopraapp</a> &gt; <span class="el_source">SearchResultsActivity.java</span></div><h1>SearchResultsActivity.java</h1><pre class="source lang-java linenums">package de.uni_stuttgart.informatik.sopra.sopraapp;
+
+import android.app.SearchManager;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+/**
+ * Configures Searchable, Search View
+ * Enables searching and calls a result list for the User to view
+ *
+ * @author Patrick Koss
+ * @author Sarah Gutierrez Munoz
+ * @author Michael Hersam
+ */
+<span class="fc" id="L25">public class SearchResultsActivity extends FragmentActivity {</span>
+
+    ArrayList&lt;String&gt; searchResults;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L31">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L32">        setContentView(R.layout.activity_search_results);</span>
+        //Toolbar toolbar = findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
+
+        //handles search input/query
+<span class="fc" id="L37">        handleIntent(getIntent());</span>
+
+        //set  list layout
+<span class="fc" id="L40">        final ListView sResultLv = findViewById(android.R.id.list);</span>
+<span class="fc" id="L41">        sResultLv.setBackgroundColor(Color.WHITE);</span>
+
+        //list adapter
+<span class="fc" id="L44">        ArrayAdapter&lt;String&gt; adapter = new ArrayAdapter&lt;String&gt;(this, R.layout.list_item_search, searchResults);</span>
+<span class="fc" id="L45">        sResultLv.setAdapter(adapter);</span>
+
+        //action when clicking on an item in the search results
+<span class="fc" id="L48">        sResultLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {</span>
+            public void onItemClick(AdapterView&lt;?&gt; adapterView, View view, int i, long l) {
+                //Fragment fragment = null;
+                //Class fragmentClass;
+<span class="nc" id="L52">                final String sr = adapterView.getItemAtPosition(i).toString();</span>
+<span class="nc" id="L53">                String str = sr.replaceAll(&quot;[0-9#:]+&quot;, &quot;&quot;).trim();</span>
+<span class="nc" id="L54">                Log.i(&quot;item_pos&quot;, str);</span>
+                //both version not working rn, will come back to it later
+
+                //Codes for intent goes in here.
+<span class="nc" id="L58">                Intent intent = new Intent(getBaseContext() ,MainActivity.class);</span>
+<span class="nc" id="L59">                startActivity(intent);</span>
+                //Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+                //startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+               //startActivity(startIntent);
+
+<span class="nc" id="L64">            }</span>
+        });
+
+<span class="fc" id="L67">    }</span>
+
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+<span class="fc" id="L72">        handleIntent(intent);</span>
+<span class="fc" id="L73">    }</span>
+
+    /**
+     * on search input: handle the event
+     * @param intent the search query
+     */
+    private void handleIntent(Intent intent) {
+
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {</span>
+<span class="fc" id="L82">            String query = intent.getStringExtra(SearchManager.QUERY);</span>
+            //use the query to search your data somehow
+<span class="fc" id="L84">            doMySearch(query);</span>
+        }
+<span class="fc" id="L86">    }</span>
+
+    /**
+     * handle the search input and generate the output list
+     *
+     * @param query search input from user
+     * @return ArrayList with search result (displayed in a list)
+     */
+    private ArrayList&lt;String&gt; doMySearch(String query) {
+
+        //list of all search results matching with query
+<span class="fc" id="L97">        searchResults = new ArrayList&lt;&gt;();</span>
+
+        /*array list to keep results identifier to make them clickable later on*/
+        //TODO
+<span class="fc" id="L101">        ArrayList&lt;String&gt; resultID = new ArrayList&lt;&gt;();</span>
+
+
+<span class="fc" id="L104">        String[] verträgeString = getResources().getStringArray(R.array.feld_verträge);</span>
+
+        //init database
+<span class="fc" id="L107">        DatenbankDaten db = new DatenbankDaten(this);</span>
+<span class="fc" id="L108">        db.open();</span>
+
+        /*searching for matches: */
+
+        //search contracts
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">        if (Arrays.asList(verträgeString).contains(query)) {</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">            for(String s : verträgeString) {</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">                if(s.equalsIgnoreCase(query)) {</span>
+<span class="nc" id="L116">                    searchResults.add(s);</span>
+                }
+            }
+        }
+
+        //search Gutachter
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        for(Gutachter g : db.getGutachter()) {</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">            if(g.getNachname().equalsIgnoreCase(query)) {</span>
+<span class="fc" id="L124">                searchResults.add(g.getFullName());</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">            } else if(g.getVorname().equalsIgnoreCase(query)) {</span>
+<span class="fc" id="L126">                searchResults.add(g.getFullName());</span>
+            }
+        }
+
+        //search Felder
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        for(Feld f : db.getFeld()) {</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">            if(f.getArt().equalsIgnoreCase(query)) {  //searched by Art</span>
+<span class="fc" id="L133">                searchResults.add(getString(R.string.sr_feld) + &quot; &quot; + f.getId());</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">            } else if (f.getVertrag().toString().equalsIgnoreCase(query)) { //searched by Vertrag</span>
+<span class="nc" id="L135">                searchResults.add(getString(R.string.sr_feld) + &quot; &quot; + f.getId());</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">            } else if (f.getRegion().getStadt().equalsIgnoreCase(query)) {  //searched by city</span>
+<span class="fc" id="L137">                searchResults.add(getString(R.string.sr_feld) + &quot; &quot; + f.getId());</span>
+            }
+        }
+
+        //search schadensfall
+<span class="fc bfc" id="L142" title="All 2 branches covered.">        for(Schadensfall sf : db.getSchadensfall()) {</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">            if(sf.getGutachter().getVorname().equalsIgnoreCase(query)) {</span>
+<span class="fc" id="L144">                searchResults.add(getString(R.string.sr_schaden) + &quot; &quot; + sf.getId());</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">            } else if( sf.getGutachter().getNachname().equalsIgnoreCase(query)) {</span>
+<span class="fc" id="L146">                searchResults.add(getString(R.string.sr_schaden) + &quot; &quot; + sf.getId());</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">            } else if(sf.getStatus().equalsIgnoreCase(query)) {</span>
+<span class="fc" id="L148">                searchResults.add(getString(R.string.sr_schaden) + &quot; &quot; + sf.getId());</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">            } else if(sf.getSchadensart().equalsIgnoreCase(query)) {</span>
+<span class="fc" id="L150">                searchResults.add(getString(R.string.sr_schaden) + &quot; &quot; + sf.getId());</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">            } else if(sf.getRegion().getStadt().equalsIgnoreCase(query)) {</span>
+<span class="fc" id="L152">                searchResults.add(getString(R.string.sr_schaden) + &quot; &quot; + sf.getId());</span>
+            }
+        }
+
+        //Search user
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        for(Benutzer p : db.getBenutzer()) {</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">            if(p.getVorname().equalsIgnoreCase(query)) {</span>
+<span class="fc" id="L159">                searchResults.add(p.getFullName());</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">            } else if (p.getNachname().equalsIgnoreCase(query)) {</span>
+<span class="fc" id="L161">                searchResults.add(p.getFullName());</span>
+            }
+        }
+
+        //generic search
+<span class="pc bpc" id="L166" title="1 of 4 branches missed.">        if(query.equalsIgnoreCase(getString(R.string.search_feld)) || query.equalsIgnoreCase(getString(R.string.item_feld))) {</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">            for(Feld fm : db.getFeld()) {</span>
+<span class="fc" id="L168">                searchResults.add(getString(R.string.sr_feld) + &quot; &quot; + fm.getId());</span>
+            }
+<span class="pc bpc" id="L170" title="1 of 4 branches missed.">        } else if (query.equalsIgnoreCase(getString(R.string.search_vertrag)) || query.equalsIgnoreCase(getString(R.string.item_contract))) {</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">            for(String s : verträgeString) {</span>
+<span class="fc" id="L172">                searchResults.add(s);</span>
+            }
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">        } else if (query.equalsIgnoreCase(getString(R.string.d_gutachter))) {</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">            for(Gutachter gm : db.getGutachter()) {</span>
+<span class="nc" id="L176">                searchResults.add(gm.getFullName());</span>
+            }
+<span class="pc bpc" id="L178" title="1 of 4 branches missed.">        } else if (query.equalsIgnoreCase(getString(R.string.s_fall)) || query.equalsIgnoreCase(getString(R.string.s_schaden))) {</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">            for (Schadensfall sm : db.getSchadensfall()) {</span>
+<span class="fc" id="L180">                searchResults.add(getString(R.string.sr_schaden) + &quot; &quot; + sm.getId());</span>
+            }
+        } else {
+<span class="fc" id="L183">            searchResults.add(getString(R.string.search_resultno));</span>
+        }
+
+<span class="fc" id="L186">        db.close();</span>
+        //list with all matching search results
+<span class="fc" id="L188">        return searchResults;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span>Generated by the Android Gradle plugin 2.3.3</div></body></html>

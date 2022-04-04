@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MyExpandableListAdapter.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debugAndroidTest</a> &gt; <a href="index.source.html" class="el_package">de.uni_stuttgart.informatik.sopra.sopraapp</a> &gt; <span class="el_source">MyExpandableListAdapter.java</span></div><h1>MyExpandableListAdapter.java</h1><pre class="source lang-java linenums">package de.uni_stuttgart.informatik.sopra.sopraapp;
+
+import android.content.Context;
+import android.graphics.Typeface;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageButton;
+import android.widget.TextView;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.HashMap;
+import java.util.List;
+
+import static de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity.mMap;
+
+/**
+ * Class takes care of the ListView which holds the Feld-information
+ *
+ * @author Patrick Koss
+ * @author Sarah Gutierrez Muñoz
+ * @author Michael Hersam
+ */
+public class MyExpandableListAdapter extends BaseExpandableListAdapter {
+
+
+    private Context _context;
+    // header titles
+    private List&lt;String&gt; _listDataHeader;
+    // child data in format of header title, child title
+    private HashMap&lt;String, List&lt;String&gt;&gt; _listDataChild;
+<span class="fc" id="L38">    public static int feldID=-1;</span>
+
+    /**
+     * constructor
+     *
+     * @param context
+     * @param listDataHeader
+     * @param listChildData
+     */
+    public MyExpandableListAdapter(Context context, List&lt;String&gt; listDataHeader,
+<span class="fc" id="L48">                                   HashMap&lt;String, List&lt;String&gt;&gt; listChildData) {</span>
+<span class="fc" id="L49">        this._context = context;</span>
+<span class="fc" id="L50">        this._listDataHeader = listDataHeader;</span>
+<span class="fc" id="L51">        this._listDataChild = listChildData;</span>
+<span class="fc" id="L52">    }</span>
+
+
+    /**
+     * method returns an child of the expendable ListView
+     *
+     * @param groupPosition
+     * @param childPosition
+     * @return
+     */
+    @Override
+    public Object getChild(int groupPosition, int childPosition) {
+<span class="fc" id="L64">        return this._listDataChild.get(this._listDataHeader.get(groupPosition))</span>
+<span class="fc" id="L65">                .get(childPosition);</span>
+    }
+
+    /**
+     * method returns the childID of the expandable ListView
+     *
+     * @param groupPosition
+     * @param childPosition
+     * @return
+     */
+    @Override
+    public long getChildId(int groupPosition, int childPosition) {
+<span class="nc" id="L77">        return childPosition;</span>
+    }
+
+    /**
+     * method returns the child view of the expandable ListView
+     *
+     * @param groupPosition
+     * @param childPosition
+     * @param isLastChild
+     * @param convertView
+     * @param parent
+     * @return the view of the children of the ListView
+     */
+    @Override
+    public View getChildView(int groupPosition, final int childPosition,
+                             boolean isLastChild, View convertView, ViewGroup parent) {
+
+<span class="fc" id="L94">        final String childText = (String) getChild(groupPosition, childPosition);</span>
+
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">        if (convertView == null) {</span>
+<span class="fc" id="L97">            LayoutInflater infalInflater = (LayoutInflater) this._context</span>
+<span class="fc" id="L98">                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);</span>
+<span class="fc" id="L99">            convertView = infalInflater.inflate(R.layout.exlist_item, null);</span>
+        }
+
+<span class="fc" id="L102">        TextView txtListChild = convertView</span>
+<span class="fc" id="L103">                .findViewById(R.id.lblListItem);</span>
+
+<span class="fc" id="L105">        txtListChild.setText(childText);</span>
+<span class="fc" id="L106">        return convertView;</span>
+    }
+
+    /**
+     * gets the number of children of a group
+     *
+     * @param groupPosition
+     * @return the sum of all children
+     */
+    @Override
+    public int getChildrenCount(int groupPosition) {
+<span class="fc" id="L117">        return this._listDataChild.get(this._listDataHeader.get(groupPosition))</span>
+<span class="fc" id="L118">                .size();</span>
+    }
+
+    /**
+     * method to get groups from the list
+     *
+     * @param groupPosition
+     * @return an Object with all children
+     */
+    @Override
+    public Object getGroup(int groupPosition) {
+<span class="fc" id="L129">        return this._listDataHeader.get(groupPosition);</span>
+    }
+
+    /**
+     * method returns the sum of all items
+     *
+     * @return int with listDataHeader size
+     */
+    @Override
+    public int getGroupCount() {
+<span class="fc" id="L139">        return this._listDataHeader.size();</span>
+    }
+
+    /**
+     * get the group item ID
+     *
+     * @param groupPosition
+     * @return id of a group item
+     */
+    @Override
+    public long getGroupId(int groupPosition) {
+<span class="fc" id="L150">        return groupPosition;</span>
+    }
+
+    /**
+     * get the group header view
+     *
+     * @param groupPosition
+     * @param isExpanded
+     * @param convertView
+     * @param parent
+     * @return view for the list group header
+     */
+    @Override
+    public View getGroupView(final int groupPosition, boolean isExpanded,
+                             View convertView, ViewGroup parent) {
+<span class="fc" id="L165">        String headerTitle = (String) getGroup(groupPosition);</span>
+
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        if (convertView == null) {</span>
+<span class="fc" id="L168">            LayoutInflater infalInflater = (LayoutInflater) this._context</span>
+<span class="fc" id="L169">                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);</span>
+<span class="fc" id="L170">            convertView = infalInflater.inflate(R.layout.exlist_group, null);</span>
+        }
+
+<span class="fc" id="L173">        ImageButton editButton = convertView.findViewById(R.id.editbutton);</span>
+<span class="fc" id="L174">        editButton.setFocusable(false);</span>
+
+
+<span class="fc" id="L177">        final View finalConvertView = convertView;</span>
+        //the edit button opens the fragment where you can put in new fields
+        // but before it set Markers on the edges of the selected field
+<span class="fc" id="L180">        editButton.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">                if (_context instanceof MainActivity) {</span>
+                    FragmentManager fm;
+<span class="fc" id="L185">                    fm = ((MainActivity) _context).getSupportFragmentManager();</span>
+<span class="fc" id="L186">                    List&lt;String&gt; data = FeldFragment.getListDataHeader();</span>
+<span class="fc" id="L187">                    DatenbankDaten db = new DatenbankDaten(finalConvertView.getContext());</span>
+<span class="fc" id="L188">                    db.open();</span>
+<span class="fc" id="L189">                    Feld feld = db.getFeldById(Integer.parseInt(data.get(groupPosition).split(&quot;#&quot;)[1]));</span>
+                    //put in the field id in the static variable feldID because you need it for fragments to come
+<span class="fc" id="L191">                    feldID = feld.getId();</span>
+                    //put in the vertices as markers of the follow-up fragment to model the vertices/coordinates of the selected field
+<span class="fc bfc" id="L193" title="All 2 branches covered.">                    for (int i = 0; i &lt; feld.getKoordinaten().length - 1; i++) {</span>
+<span class="fc" id="L194">                        EditFeld.marker.add(mMap.addMarker(new MarkerOptions()</span>
+<span class="fc" id="L195">                                .position(new LatLng(feld.getKoordinaten()[i].latitude, feld.getKoordinaten()[i].longitude))</span>
+<span class="fc" id="L196">                                .title(String.valueOf(EditFeld.marker.size() + 1))</span>
+<span class="fc" id="L197">                                .draggable(true)));</span>
+                    }
+<span class="fc" id="L199">                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(feld.getKoordinaten()[0].latitude, feld.getKoordinaten()[0].longitude), 15));</span>
+                    //open the editing fragment without a go back button
+<span class="fc" id="L201">                    EditFeld edScreen = new EditFeld();</span>
+<span class="fc" id="L202">                    FragmentTransaction ft = fm.beginTransaction();</span>
+                    //fm.beginTransaction().replace(R.id.flContent, edScreen).commit();
+<span class="fc" id="L204">                    ft.replace(R.id.flContent, edScreen).addToBackStack(&quot;tag&quot;).commit();</span>
+<span class="fc" id="L205">                    db.close();</span>
+                }
+<span class="fc" id="L207">            }</span>
+        });
+
+
+<span class="fc" id="L211">        TextView lblListHeader = convertView.findViewById(R.id.lblListHeader);</span>
+<span class="fc" id="L212">        lblListHeader.setTypeface(null, Typeface.BOLD);</span>
+<span class="fc" id="L213">        lblListHeader.setText(headerTitle);</span>
+
+<span class="fc" id="L215">        return convertView;</span>
+    }
+
+    /**
+     * checks whether there are stable IDs or not
+     * @return boolean
+     */
+    @Override
+    public boolean hasStableIds() {
+<span class="fc" id="L224">        return false;</span>
+    }
+
+    /**
+     * checks whether a child is selectable or not
+     * @param groupPosition
+     * @param childPosition
+     * @return boolean
+     */
+    @Override
+    public boolean isChildSelectable(int groupPosition, int childPosition) {
+<span class="fc" id="L235">        return true;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span>Generated by the Android Gradle plugin 2.3.3</div></body></html>

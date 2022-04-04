@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Datenbank.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debugAndroidTest</a> &gt; <a href="index.source.html" class="el_package">de.uni_stuttgart.informatik.sopra.sopraapp</a> &gt; <span class="el_source">Datenbank.java</span></div><h1>Datenbank.java</h1><pre class="source lang-java linenums">package de.uni_stuttgart.informatik.sopra.sopraapp;
+
+import android.content.Context;
+import android.database.DatabaseErrorHandler;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+/**
+ * Class that creates a database
+ *
+ * @author Patrick Koss
+ * @author Sarah Gutierrez Munoz
+ * @author Michael Hersam
+ */
+
+public class Datenbank extends SQLiteOpenHelper {
+
+<span class="fc" id="L19">    public static final String LOG_TAG = Datenbank.class.getSimpleName();</span>
+
+    public static final String DB_NAME = &quot;Datenbank.db&quot;;
+    private static final int DB_VERSON = 1;
+
+    public static final String TABLE_REGION = &quot;region&quot;;
+    public static final String REGION_COLUMN_STADT = &quot;stadt&quot;;
+    public static final String REGION_COLUMN_BUNDESLAND = &quot;bundesland&quot;;
+    public static final String REGION_COLUMN_LAND = &quot;land&quot;;
+    public static final String REGION_COLUMN_LANDKREIS = &quot;landkreis&quot;;
+    public static final String REGION_COLUMN_ID = &quot;id&quot;;
+
+    public static final String TABLE_GUTACHTER = &quot;gutachter&quot;;
+    public static final String GUTACHTER_COLUMN_VORNAME = &quot;vorname&quot;;
+    public static final String GUTACHTER_COLUMN_NACHNAME = &quot;nachname&quot;;
+    public static final String GUTACHTER_COLUMN_ADRESSE = &quot;adresse&quot;;
+    public static final String GUTACHTER_COLUMN_ID = &quot;id&quot;;
+    public static final String GUTACHTER_COLUMN_PASSWORT = &quot;passwort&quot;;
+
+    public static final String TABLE_BENUTZER = &quot;benutzer&quot;;
+    public static final String BENUTZER_COLUMN_VORNAME = &quot;vorname&quot;;
+    public static final String BENUTZER_COLUMN_NACHNAME = &quot;nachname&quot;;
+    public static final String BENUTZER_COLUMN_ADRESSE = &quot;adresse&quot;;
+    public static final String BENUTZER_COLUMN_ID = &quot;id&quot;;
+    public static final String BENUTZER_COLUMN_PASSWORT = &quot;passwort&quot;;
+
+    public static final String TABLE_VERTRAG = &quot;vertrag&quot;;
+    public static final String VERTRAG_COLUMN_ID = &quot;id&quot;;
+    public static final String VERTRAG_COLUMN_BENUTZER = &quot;benutzer&quot;;
+    public static final String VERTRAG_COLUMN_ART = &quot;art&quot;;
+
+    public static final String TABLE_FELD = &quot;feld&quot;;
+    public static final String FELD_COLUMN_ID = &quot;id&quot;;
+    public static final String FELD_COLUMN_ART = &quot;art&quot;;
+    public static final String FELD_COLUMN_FLAECHE = &quot;flaeche&quot;;
+    public static final String FELD_COLUMN_KOORDINATEN = &quot;koordinaten&quot;;
+    public static final String FELD_COLUMN_REGION = &quot;region&quot;;
+    public static final String FELD_COLUMN_VERTRAG = &quot;vertrag&quot;;
+
+    public static final String TABLE_FELDOHNEVERTRAG = &quot;feldohnevertrag&quot;;
+    public static final String FELDOHNEVERTRAG_COLUMN_ID = &quot;id&quot;;
+    public static final String FELDOHNEVERTRAG_COLUMN_ART = &quot;art&quot;;
+    public static final String FELDOHNEVERTRAG_COLUMN_FLAECHE = &quot;flaeche&quot;;
+    public static final String FELDOHNEVERTRAG_COLUMN_KOORDINATEN = &quot;koordinaten&quot;;
+    public static final String FELDOHNEVERTRAG_COLUMN_REGION = &quot;region&quot;;
+    public static final String FELDOHNEVERTRAG_COLUMN_BENUTZER = &quot;benutzer&quot;;
+
+    public static final String TABLE_SCHADENSFALL = &quot;schadensfall&quot;;
+    public static final String SCHADENSFALL_COLUMN_ID = &quot;id&quot;;
+    public static final String SCHADENSFALL_COLUMN_SCHADENSART = &quot;schadensart&quot;;
+    public static final String SCHADENSFALL_COLUMN_FELD = &quot;feld&quot;;
+    public static final String SCHADENSFALL_COLUMN_SCHADENSPOSITION = &quot;schadensposition&quot;;
+    public static final String SCHADENSFALL_COLUMN_STATUS = &quot;status&quot;;
+    public static final String SCHADENSFALL_COLUMN_REGION = &quot;region&quot;;
+    public static final String SCHADENSFALL_COLUMN_DATUM = &quot;datum&quot;;
+    public static final String SCHADENSFALL_COLUMN_BILDER = &quot;bilder&quot;;
+    public static final String SCHADENSFALL_COLUMN_FLAECHE = &quot;flaeche&quot;;
+    public static final String SCHADENSFALL_COLUMN_GUTACHTER = &quot;gutachter&quot;;
+
+
+    public static final String SQL_CREATE_REGION =
+            &quot;CREATE TABLE &quot; + TABLE_REGION + &quot;(&quot; + REGION_COLUMN_ID + &quot; INTEGER PRIMARY KEY AUTOINCREMENT, &quot; +
+                    REGION_COLUMN_STADT + &quot; TEXT NOT NULL, &quot; +
+                    REGION_COLUMN_LANDKREIS + &quot; TEXT NOT NULL, &quot; +
+                    REGION_COLUMN_BUNDESLAND + &quot; TEXT NOT NULL, &quot; +
+                    REGION_COLUMN_LAND + &quot; TEXT NOT NULL);&quot;;
+
+    public static final String SQL_CREATE_GUTACHTER =
+            &quot;CREATE TABLE &quot; + TABLE_GUTACHTER + &quot;(&quot; + GUTACHTER_COLUMN_ID + &quot; INTEGER PRIMARY KEY AUTOINCREMENT, &quot; +
+                    GUTACHTER_COLUMN_VORNAME + &quot; TEXT NOT NULL, &quot; +
+                    GUTACHTER_COLUMN_NACHNAME + &quot; TEXT NOT NULL, &quot; +
+                    GUTACHTER_COLUMN_PASSWORT + &quot; TEXT NOT NULL, &quot; +
+                    GUTACHTER_COLUMN_ADRESSE + &quot; TEXT NOT NULL);&quot;;
+
+    public static final String SQL_CREATE_BENUTZER =
+            &quot;CREATE TABLE &quot; + TABLE_BENUTZER + &quot;(&quot; + BENUTZER_COLUMN_ID + &quot; INTEGER PRIMARY KEY AUTOINCREMENT, &quot; +
+                    BENUTZER_COLUMN_VORNAME + &quot; TEXT NOT NULL, &quot; +
+                    BENUTZER_COLUMN_NACHNAME + &quot; TEXT NOT NULL, &quot; +
+                    BENUTZER_COLUMN_PASSWORT + &quot; TEXT NOT NULL, &quot; +
+                    BENUTZER_COLUMN_ADRESSE + &quot; TEXT NOT NULL);&quot;;
+
+    public static final String SQL_CREATE_VERTRAG =
+            &quot;CREATE TABLE &quot; + TABLE_VERTRAG + &quot;(&quot; + VERTRAG_COLUMN_ID + &quot; INTEGER PRIMARY KEY AUTOINCREMENT, &quot; +
+                    VERTRAG_COLUMN_BENUTZER + &quot; INTEGER NOT NULL, &quot; +
+                    VERTRAG_COLUMN_ART + &quot; TEXT NOT NULL, &quot; +
+                    &quot;FOREIGN KEY (benutzer) REFERENCES benutzer(id) ON DELETE CASCADE);&quot;;
+
+    public static final String SQL_CREATE_FELD =
+            &quot;CREATE TABLE &quot; + TABLE_FELD + &quot;(&quot; + FELD_COLUMN_ID + &quot; INTEGER PRIMARY KEY AUTOINCREMENT, &quot; +
+                    FELD_COLUMN_ART + &quot; TEXT NOT NULL, &quot; +
+                    FELD_COLUMN_FLAECHE + &quot; TEXT NOT NULL, &quot; +
+                    FELD_COLUMN_KOORDINATEN + &quot; TEXT NOT NULL, &quot; +
+                    FELD_COLUMN_REGION + &quot; INTEGER NOT NULL, &quot; +
+                    FELD_COLUMN_VERTRAG + &quot; INTEGER NOT NULL, &quot; +
+                    &quot;FOREIGN KEY (region) REFERENCES region(id) ON DELETE CASCADE, &quot; +
+                    &quot;FOREIGN KEY (vertrag) REFERENCES vertrag(id) ON DELETE CASCADE);&quot;;
+
+    public static final String SQL_CREATE_FELDOHNEVERTRAG =
+            &quot;CREATE TABLE &quot; + TABLE_FELDOHNEVERTRAG + &quot;(&quot; + FELDOHNEVERTRAG_COLUMN_ID + &quot; INTEGER PRIMARY KEY AUTOINCREMENT, &quot; +
+                    FELDOHNEVERTRAG_COLUMN_ART + &quot; TEXT NOT NULL, &quot; +
+                    FELDOHNEVERTRAG_COLUMN_FLAECHE + &quot; TEXT NOT NULL, &quot; +
+                    FELDOHNEVERTRAG_COLUMN_KOORDINATEN + &quot; TEXT NOT NULL, &quot; +
+                    FELDOHNEVERTRAG_COLUMN_REGION + &quot; INTEGER NOT NULL, &quot; +
+                    FELDOHNEVERTRAG_COLUMN_BENUTZER + &quot; INTEGER NOT NULL, &quot; +
+                    &quot;FOREIGN KEY (benutzer) REFERENCES benutzer(id) ON DELETE CASCADE, &quot; +
+                    &quot;FOREIGN KEY (region) REFERENCES region(id) ON DELETE CASCADE);&quot;;
+
+    public static final String SQL_CREATE_SCHADENSFALL =
+            &quot;CREATE TABLE &quot; + TABLE_SCHADENSFALL + &quot;(&quot; + SCHADENSFALL_COLUMN_ID + &quot; INTEGER PRIMARY KEY AUTOINCREMENT, &quot; +
+                    SCHADENSFALL_COLUMN_SCHADENSART + &quot; TEXT NOT NULL, &quot; +
+                    SCHADENSFALL_COLUMN_SCHADENSPOSITION + &quot; TEXT NOT NULL, &quot; +
+                    SCHADENSFALL_COLUMN_STATUS + &quot; TEXT NOT NULL, &quot; +
+                    SCHADENSFALL_COLUMN_DATUM + &quot; TEXT NOT NULL, &quot; +
+                    SCHADENSFALL_COLUMN_FELD + &quot; INTEGER NOT NULL, &quot; +
+                    SCHADENSFALL_COLUMN_REGION + &quot; INTEGER NOT NULL, &quot; +
+                    SCHADENSFALL_COLUMN_BILDER + &quot; TEXT, &quot; +
+                    SCHADENSFALL_COLUMN_FLAECHE + &quot; TEXT NOT NULL, &quot; +
+                    SCHADENSFALL_COLUMN_GUTACHTER + &quot; TEXT NOT NULL, &quot; +
+                    &quot;FOREIGN KEY (region) REFERENCES region(id) ON DELETE CASCADE, &quot; +
+                    &quot;FOREIGN KEY (gutachter) REFERENCES gutachter(id) ON DELETE CASCADE, &quot; +
+                    &quot;FOREIGN KEY (feld) REFERENCES feld(id) ON DELETE CASCADE);&quot;;
+
+
+    public Datenbank(Context context) {
+<span class="fc" id="L143">        super(context, DB_NAME, null, DB_VERSON);</span>
+<span class="fc" id="L144">        Log.d(LOG_TAG, &quot;Datenbank: &quot; + getDatabaseName() + &quot; wurde erzeugt.&quot;);</span>
+<span class="fc" id="L145">    }</span>
+
+    public Datenbank(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler) {
+<span class="nc" id="L148">        super(context, name, factory, version, errorHandler);</span>
+<span class="nc" id="L149">    }</span>
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        try {
+<span class="fc" id="L154">            db.execSQL(SQL_CREATE_BENUTZER);</span>
+<span class="fc" id="L155">            Log.e(LOG_TAG, TABLE_BENUTZER + &quot; wurde erzeugt&quot;);</span>
+<span class="fc" id="L156">            db.execSQL(SQL_CREATE_VERTRAG);</span>
+<span class="fc" id="L157">            Log.e(LOG_TAG, TABLE_VERTRAG + &quot; wurde erzeugt&quot;);</span>
+<span class="fc" id="L158">            db.execSQL(SQL_CREATE_GUTACHTER);</span>
+<span class="fc" id="L159">            Log.e(LOG_TAG, TABLE_GUTACHTER + &quot; wurde erzeugt&quot;);</span>
+<span class="fc" id="L160">            db.execSQL(SQL_CREATE_REGION);</span>
+<span class="fc" id="L161">            Log.e(LOG_TAG, TABLE_REGION + &quot; wurde erzeugt&quot;);</span>
+<span class="fc" id="L162">            db.execSQL(SQL_CREATE_SCHADENSFALL);</span>
+<span class="fc" id="L163">            Log.e(LOG_TAG, TABLE_SCHADENSFALL + &quot; wurde erzeugt&quot;);</span>
+<span class="fc" id="L164">            db.execSQL(SQL_CREATE_FELD);</span>
+<span class="fc" id="L165">            Log.e(LOG_TAG, TABLE_FELD + &quot; wurde erzeugt&quot;);</span>
+<span class="fc" id="L166">            db.execSQL(SQL_CREATE_FELDOHNEVERTRAG);</span>
+<span class="fc" id="L167">            Log.e(LOG_TAG, TABLE_FELDOHNEVERTRAG + &quot; wurde erzeugt&quot;);</span>
+<span class="nc" id="L168">        } catch (Exception e) {</span>
+<span class="nc" id="L169">            Log.e(LOG_TAG, R.string.error_1 + e.getMessage());</span>
+<span class="fc" id="L170">        }</span>
+<span class="fc" id="L171">    }</span>
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+<span class="nc" id="L176">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span>Generated by the Android Gradle plugin 2.3.3</div></body></html>

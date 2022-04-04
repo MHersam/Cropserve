@@ -1,0 +1,81 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/edifeldscreen"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EditFeld">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/setMarker2"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:backgroundTint="@color/kind_buttons"
+            android:elevation="10dp"
+            android:text="Button"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/gps2"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/gps2"
+            tools:layout_constraintBottom_creator="1"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintTop_creator="1" />
+
+        <Button
+            android:id="@+id/gps2"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginBottom="6dp"
+            android:layout_marginTop="7dp"
+            android:backgroundTint="@color/kind_buttons"
+            android:elevation="10dp"
+            android:text="Button"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editInfo"
+            tools:layout_constraintBottom_creator="1"
+            tools:layout_constraintRight_creator="1"
+            tools:layout_constraintTop_creator="1"
+            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintRight_toLeftOf="@+id/save2" />
+
+        <Button
+            android:id="@+id/save2"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:backgroundTint="@color/kind_buttons"
+            android:elevation="10dp"
+            android:text="Button"
+            android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/gps2"
+            app:layout_constraintLeft_toLeftOf="@+id/editInfo"
+            app:layout_constraintRight_toRightOf="@+id/editInfo"
+            app:layout_constraintTop_toTopOf="@+id/gps2"
+            tools:layout_constraintBottom_creator="1"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintRight_creator="1"
+            tools:layout_constraintTop_creator="1" />
+
+        <Button
+            android:id="@+id/editInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="83dp"
+            android:layout_marginEnd="3dp"
+            android:layout_marginRight="3dp"
+            android:backgroundTint="@color/kind_buttons"
+            android:text="@string/edit_btn"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:layout_constraintBottom_creator="1"
+            tools:layout_constraintRight_creator="1" />
+    </android.support.constraint.ConstraintLayout>
+
+</FrameLayout>

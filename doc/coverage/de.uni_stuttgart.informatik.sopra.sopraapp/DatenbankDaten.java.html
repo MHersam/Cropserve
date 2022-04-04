@@ -1,0 +1,742 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DatenbankDaten.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debugAndroidTest</a> &gt; <a href="index.source.html" class="el_package">de.uni_stuttgart.informatik.sopra.sopraapp</a> &gt; <span class="el_source">DatenbankDaten.java</span></div><h1>DatenbankDaten.java</h1><pre class="source lang-java linenums">package de.uni_stuttgart.informatik.sopra.sopraapp;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import com.google.android.gms.maps.model.LatLng;
+import java.util.ArrayList;
+import java.util.Date;
+
+/**
+ * Class that helps to write and get Data from the database
+ *
+ * @author Patrick Koss
+ * @author Sarah Gutierrez Munoz
+ * @author Michael Hersam
+ */
+public class DatenbankDaten {
+
+    private SQLiteDatabase database;
+    private Datenbank datenbank;
+<span class="fc" id="L22">    private static final String LOG_TAG = Datenbank.class.getSimpleName();</span>
+
+    /**
+     * constructor
+     *
+     * @param context
+     */
+<span class="fc" id="L29">    public DatenbankDaten(Context context) {</span>
+<span class="fc" id="L30">        datenbank = new Datenbank(context);</span>
+<span class="fc" id="L31">    }</span>
+
+    /**
+     * method open the database, so you can read/ write new data out/in
+     */
+    public void open() {
+<span class="fc" id="L37">        database = datenbank.getWritableDatabase();</span>
+<span class="fc" id="L38">    }</span>
+
+    /**
+     * method close the database after reading or writing
+     */
+    public void close() {
+<span class="fc" id="L44">        datenbank.close();</span>
+<span class="fc" id="L45">    }</span>
+
+    /**
+     * method add a Region to table region of the database
+     *
+     * @param region
+     */
+    public void addRegion(Region region) {
+<span class="fc" id="L53">        ContentValues values = new ContentValues();</span>
+<span class="fc" id="L54">        values.put(Datenbank.REGION_COLUMN_STADT, region.getStadt());</span>
+<span class="fc" id="L55">        values.put(Datenbank.REGION_COLUMN_BUNDESLAND, region.getBundesland());</span>
+<span class="fc" id="L56">        values.put(Datenbank.REGION_COLUMN_LAND, region.getLand());</span>
+<span class="fc" id="L57">        values.put(Datenbank.REGION_COLUMN_LANDKREIS, region.getLandkreis());</span>
+<span class="fc" id="L58">        long insertId = database.insert(Datenbank.TABLE_REGION, null, values);</span>
+<span class="fc" id="L59">    }</span>
+
+    /**
+     * method add a Feld to table feld of the database
+     *
+     * @param feld
+     */
+    public void addFeld(Feld feld) {
+<span class="fc" id="L67">        ContentValues values = new ContentValues();</span>
+<span class="fc" id="L68">        values.put(Datenbank.FELD_COLUMN_ART, feld.getArt());</span>
+<span class="fc" id="L69">        values.put(Datenbank.FELD_COLUMN_FLAECHE, String.valueOf(feld.getFlaeche()));</span>
+<span class="fc" id="L70">        values.put(Datenbank.FELD_COLUMN_REGION, feld.getRegion().getId());</span>
+<span class="fc" id="L71">        String koordinaten = &quot;&quot;;</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        for (int i = 0; i &lt; feld.getKoordinaten().length; i++) {</span>
+<span class="fc" id="L73">            koordinaten += String.valueOf(feld.getKoordinaten()[i].latitude) + &quot;,&quot; + String.valueOf(feld.getKoordinaten()[i].longitude) + &quot;;&quot;;</span>
+        }
+<span class="fc" id="L75">        values.put(Datenbank.FELD_COLUMN_KOORDINATEN, koordinaten);</span>
+<span class="fc" id="L76">        values.put(Datenbank.FELD_COLUMN_VERTRAG, feld.getVertrag().getId());</span>
+<span class="fc" id="L77">        long insertId = database.insert(Datenbank.TABLE_FELD, null, values);</span>
+<span class="fc" id="L78">    }</span>
+
+    /**
+     * method adds a Schadensfall to the table schadensfall of the database
+     *
+     * @param schadensfall
+     */
+    public void addSchadensfall(Schadensfall schadensfall) {
+<span class="fc" id="L86">        ContentValues values = new ContentValues();</span>
+<span class="fc" id="L87">        String bilder = &quot;&quot;;</span>
+<span class="fc" id="L88">        String koordinaten = &quot;&quot;;</span>
+<span class="fc" id="L89">        String date = &quot;&quot;;</span>
+        //add each pic to a string separated by ;
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        for (int i = 0; i &lt; schadensfall.getBilder().length; i++) {</span>
+<span class="fc" id="L92">            bilder += schadensfall.getBilder()[i] + &quot;;&quot;;</span>
+        }
+        //add x-coordinate,y-coordinate and separate each coordinate with ;
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        for (int i = 0; i &lt; schadensfall.getSchadensposition().length; i++) {</span>
+<span class="fc" id="L96">            koordinaten += String.valueOf(schadensfall.getSchadensposition()[i].latitude) + &quot;,&quot; + String.valueOf(schadensfall.getSchadensposition()[i].longitude) + &quot;;&quot;;</span>
+        }
+
+        //add day;month;year to a string
+<span class="fc" id="L100">        String datumString = schadensfall.getDatum();</span>
+<span class="fc" id="L101">        String sub = datumString.substring(0, 10);</span>
+<span class="fc" id="L102">        String sub2 = datumString.substring(datumString.length()-4, datumString.length());</span>
+<span class="fc" id="L103">        String datumRe = sub + &quot; - &quot; + sub2;</span>
+
+        //Calendar cal = Calendar.getInstance();
+        //date += cal.get(Calendar.DAY_OF_MONTH) + &quot;;&quot;;
+        //date += cal.get(Calendar.MONTH) + &quot;;&quot;;
+        //date += cal.get(Calendar.YEAR) + &quot;;&quot;;
+
+<span class="fc" id="L110">        values.put(Datenbank.SCHADENSFALL_COLUMN_BILDER, bilder);</span>
+<span class="fc" id="L111">        values.put(Datenbank.SCHADENSFALL_COLUMN_SCHADENSPOSITION, koordinaten);</span>
+<span class="fc" id="L112">        values.put(Datenbank.SCHADENSFALL_COLUMN_DATUM, datumRe);</span>
+<span class="fc" id="L113">        values.put(Datenbank.SCHADENSFALL_COLUMN_FELD, schadensfall.getFeld().getId());</span>
+<span class="fc" id="L114">        values.put(Datenbank.SCHADENSFALL_COLUMN_REGION, schadensfall.getRegion().getId());</span>
+<span class="fc" id="L115">        values.put(Datenbank.SCHADENSFALL_COLUMN_SCHADENSART, schadensfall.getSchadensart());</span>
+<span class="fc" id="L116">        values.put(Datenbank.SCHADENSFALL_COLUMN_STATUS, schadensfall.getStatus());</span>
+<span class="fc" id="L117">        values.put(Datenbank.SCHADENSFALL_COLUMN_FLAECHE, schadensfall.getFlaeche());</span>
+<span class="fc" id="L118">        values.put(Datenbank.SCHADENSFALL_COLUMN_GUTACHTER, schadensfall.getGutachter().getId());</span>
+<span class="fc" id="L119">        long insertId = database.insert(Datenbank.TABLE_SCHADENSFALL, null, values);</span>
+<span class="fc" id="L120">    }</span>
+
+    /**
+     * method add a Benutzer to table benutzer of the database
+     *
+     * @param benutzer
+     */
+    public void addBenutzer(Benutzer benutzer) {
+<span class="fc" id="L128">        ContentValues values = new ContentValues();</span>
+<span class="fc" id="L129">        values.put(Datenbank.BENUTZER_COLUMN_ADRESSE, benutzer.getAdresse());</span>
+<span class="fc" id="L130">        values.put(Datenbank.BENUTZER_COLUMN_NACHNAME, benutzer.getNachname());</span>
+<span class="fc" id="L131">        values.put(Datenbank.BENUTZER_COLUMN_VORNAME, benutzer.getVorname());</span>
+<span class="fc" id="L132">        values.put(Datenbank.BENUTZER_COLUMN_PASSWORT, benutzer.getPasswort());</span>
+<span class="fc" id="L133">        long insertId = database.insert(Datenbank.TABLE_BENUTZER, null, values);</span>
+<span class="fc" id="L134">    }</span>
+
+    /**
+     * method adds a Gutachter to table gutachter of the database
+     *
+     * @param gutachter
+     */
+    public void addGutachter(Gutachter gutachter) {
+<span class="fc" id="L142">        ContentValues values = new ContentValues();</span>
+<span class="fc" id="L143">        values.put(Datenbank.GUTACHTER_COLUMN_ADRESSE, gutachter.getAdresse());</span>
+<span class="fc" id="L144">        values.put(Datenbank.GUTACHTER_COLUMN_NACHNAME, gutachter.getNachname());</span>
+<span class="fc" id="L145">        values.put(Datenbank.GUTACHTER_COLUMN_VORNAME, gutachter.getVorname());</span>
+<span class="fc" id="L146">        values.put(Datenbank.GUTACHTER_COLUMN_PASSWORT, gutachter.getPasswort());</span>
+<span class="fc" id="L147">        long insertId = database.insert(Datenbank.TABLE_GUTACHTER, null, values);</span>
+<span class="fc" id="L148">    }</span>
+
+    /**
+     * method adds a Vertrag to table vertrag of the database
+     *
+     * @param vertrag
+     */
+    public void addVertrag(Vertrag vertrag) {
+<span class="fc" id="L156">        ContentValues values = new ContentValues();</span>
+<span class="fc" id="L157">        values.put(Datenbank.VERTRAG_COLUMN_BENUTZER, vertrag.getPerson().getId());</span>
+<span class="fc" id="L158">        values.put(Datenbank.VERTRAG_COLUMN_ART, vertrag.getArt());</span>
+<span class="fc" id="L159">        long insertId = database.insert(Datenbank.TABLE_VERTRAG, null, values);</span>
+<span class="fc" id="L160">    }</span>
+
+    /**
+     * method returns all data as a field of Gutachter from table gutachter
+     *
+     * @return
+     */
+    public Gutachter[] getGutachter() {
+<span class="fc" id="L168">        ArrayList&lt;Gutachter&gt; gutachter = new ArrayList&lt;Gutachter&gt;();</span>
+<span class="fc" id="L169">        String[] columns = {Datenbank.GUTACHTER_COLUMN_ID, Datenbank.GUTACHTER_COLUMN_VORNAME, Datenbank.GUTACHTER_COLUMN_NACHNAME, Datenbank.GUTACHTER_COLUMN_ADRESSE, Datenbank.GUTACHTER_COLUMN_PASSWORT};</span>
+<span class="fc" id="L170">        Cursor cursor = database.query(Datenbank.TABLE_GUTACHTER, columns, null, null, null, null, null, null);</span>
+<span class="fc" id="L171">        cursor.moveToFirst();</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        while (!cursor.isAfterLast()) {</span>
+<span class="fc" id="L173">            int id = cursor.getInt(cursor.getColumnIndex(Datenbank.GUTACHTER_COLUMN_ID));</span>
+<span class="fc" id="L174">            String vorname = cursor.getString(cursor.getColumnIndex(Datenbank.GUTACHTER_COLUMN_VORNAME));</span>
+<span class="fc" id="L175">            String nachname = cursor.getString(cursor.getColumnIndex(Datenbank.GUTACHTER_COLUMN_NACHNAME));</span>
+<span class="fc" id="L176">            String adresse = cursor.getString(cursor.getColumnIndex(Datenbank.GUTACHTER_COLUMN_ADRESSE));</span>
+<span class="fc" id="L177">            String passwort = cursor.getString(cursor.getColumnIndex(Datenbank.GUTACHTER_COLUMN_PASSWORT));</span>
+<span class="fc" id="L178">            gutachter.add(new Gutachter(vorname, nachname, adresse, id, passwort));</span>
+<span class="fc" id="L179">            cursor.moveToNext();</span>
+<span class="fc" id="L180">        }</span>
+<span class="fc" id="L181">        Gutachter result[] = new Gutachter[gutachter.size()];</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">        for (int i = 0; i &lt; result.length; i++) {</span>
+<span class="fc" id="L183">            result[i] = gutachter.get(i);</span>
+        }
+<span class="fc" id="L185">        cursor.close();</span>
+<span class="fc" id="L186">        return result;</span>
+    }
+
+    /**
+     * method returns all data as a field Benutzer from table benutzer
+     *
+     * @return
+     */
+    public Benutzer[] getBenutzer() {
+<span class="fc" id="L195">        ArrayList&lt;Benutzer&gt; benutzer = new ArrayList&lt;Benutzer&gt;();</span>
+<span class="fc" id="L196">        String[] columns = {Datenbank.BENUTZER_COLUMN_ID, Datenbank.BENUTZER_COLUMN_VORNAME, Datenbank.BENUTZER_COLUMN_NACHNAME, Datenbank.BENUTZER_COLUMN_ADRESSE, Datenbank.BENUTZER_COLUMN_PASSWORT};</span>
+<span class="fc" id="L197">        Cursor cursor = database.query(Datenbank.TABLE_BENUTZER, columns, null, null, null, null, null, null);</span>
+<span class="fc" id="L198">        cursor.moveToFirst();</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">        while (!cursor.isAfterLast()) {</span>
+<span class="fc" id="L200">            int id = cursor.getInt(cursor.getColumnIndex(Datenbank.BENUTZER_COLUMN_ID));</span>
+<span class="fc" id="L201">            String vorname = cursor.getString(cursor.getColumnIndex(Datenbank.BENUTZER_COLUMN_VORNAME));</span>
+<span class="fc" id="L202">            String nachname = cursor.getString(cursor.getColumnIndex(Datenbank.BENUTZER_COLUMN_NACHNAME));</span>
+<span class="fc" id="L203">            String adresse = cursor.getString(cursor.getColumnIndex(Datenbank.BENUTZER_COLUMN_ADRESSE));</span>
+<span class="fc" id="L204">            String passwort = cursor.getString(cursor.getColumnIndex(Datenbank.BENUTZER_COLUMN_PASSWORT));</span>
+<span class="fc" id="L205">            benutzer.add(new Benutzer(vorname, nachname, adresse, id, passwort));</span>
+<span class="fc" id="L206">            cursor.moveToNext();</span>
+<span class="fc" id="L207">        }</span>
+<span class="fc" id="L208">        Benutzer result[] = new Benutzer[benutzer.size()];</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">        for (int i = 0; i &lt; result.length; i++) {</span>
+<span class="fc" id="L210">            result[i] = benutzer.get(i);</span>
+        }
+<span class="fc" id="L212">        cursor.close();</span>
+<span class="fc" id="L213">        return result;</span>
+    }
+
+    /**
+     * method returns all data as a field Vertrag from table vertrag
+     *
+     * @return
+     */
+    public Vertrag[] getVertrag() {
+<span class="fc" id="L222">        ArrayList&lt;Vertrag&gt; vertrag = new ArrayList&lt;Vertrag&gt;();</span>
+<span class="fc" id="L223">        String[] columns = {Datenbank.VERTRAG_COLUMN_ID, Datenbank.VERTRAG_COLUMN_BENUTZER, Datenbank.VERTRAG_COLUMN_ART};</span>
+<span class="fc" id="L224">        Cursor cursor = database.query(Datenbank.TABLE_VERTRAG, columns, null, null, null, null, null, null);</span>
+<span class="fc" id="L225">        cursor.moveToFirst();</span>
+<span class="fc" id="L226">        Benutzer[] benutzer = getBenutzer();</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">        while (!cursor.isAfterLast()) {</span>
+<span class="fc" id="L228">            int id = cursor.getInt(cursor.getColumnIndex(Datenbank.VERTRAG_COLUMN_ID));</span>
+<span class="fc" id="L229">            int benutzerId = cursor.getInt(cursor.getColumnIndex(Datenbank.VERTRAG_COLUMN_BENUTZER));</span>
+<span class="fc" id="L230">            String art = cursor.getString(cursor.getColumnIndex(Datenbank.VERTRAG_COLUMN_ART));</span>
+<span class="fc" id="L231">            Benutzer benutzer1 = null;</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">            for (int i = 0; i &lt; benutzer.length; i++)</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">                if (benutzer[i].getId() == benutzerId) benutzer1 = benutzer[i];</span>
+<span class="fc" id="L234">            vertrag.add(new Vertrag(id, benutzer1, art));</span>
+<span class="fc" id="L235">            cursor.moveToNext();</span>
+<span class="fc" id="L236">        }</span>
+<span class="fc" id="L237">        Vertrag result[] = new Vertrag[vertrag.size()];</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">        for (int i = 0; i &lt; result.length; i++) {</span>
+<span class="fc" id="L239">            result[i] = vertrag.get(i);</span>
+        }
+<span class="fc" id="L241">        cursor.close();</span>
+<span class="fc" id="L242">        return result;</span>
+    }
+
+    /**
+     * method returns all data as a field Feld from table feld
+     *
+     * @return
+     */
+    public Feld[] getFeld() {
+<span class="fc" id="L251">        ArrayList&lt;Feld&gt; feld = new ArrayList&lt;Feld&gt;();</span>
+<span class="fc" id="L252">        String[] columns = {Datenbank.FELD_COLUMN_ID, Datenbank.FELD_COLUMN_ART, Datenbank.FELD_COLUMN_FLAECHE, Datenbank.FELD_COLUMN_KOORDINATEN, Datenbank.FELD_COLUMN_REGION, Datenbank.FELD_COLUMN_VERTRAG};</span>
+<span class="fc" id="L253">        Cursor cursor = database.query(Datenbank.TABLE_FELD, columns, null, null, null, null, null, null);</span>
+<span class="fc" id="L254">        cursor.moveToFirst();</span>
+<span class="fc" id="L255">        Region region[] = getRegion();</span>
+<span class="fc" id="L256">        Vertrag vertrag[] = getVertrag();</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">        while (!cursor.isAfterLast()) {</span>
+<span class="fc" id="L258">            int id = cursor.getInt(cursor.getColumnIndex(Datenbank.FELD_COLUMN_ID));</span>
+<span class="fc" id="L259">            int regionId = cursor.getInt(cursor.getColumnIndex(Datenbank.FELD_COLUMN_REGION));</span>
+<span class="fc" id="L260">            int vertragId = cursor.getInt(cursor.getColumnIndex(Datenbank.FELD_COLUMN_VERTRAG));</span>
+<span class="fc" id="L261">            String art = cursor.getString(cursor.getColumnIndex(Datenbank.FELD_COLUMN_ART));</span>
+<span class="fc" id="L262">            Double flaeche = Double.parseDouble(cursor.getString(cursor.getColumnIndex(Datenbank.FELD_COLUMN_FLAECHE)));</span>
+<span class="fc" id="L263">            String koordinaten = cursor.getString(cursor.getColumnIndex(Datenbank.FELD_COLUMN_KOORDINATEN));</span>
+<span class="fc" id="L264">            String[] latLng = koordinaten.split(&quot;;&quot;);</span>
+<span class="fc" id="L265">            ArrayList&lt;LatLng&gt; pointsNew = new ArrayList&lt;LatLng&gt;();</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">            for (int i = 0; i &lt; latLng.length; i++) {</span>
+<span class="fc" id="L267">                String[] coordinate = latLng[i].split(&quot;,&quot;);</span>
+<span class="fc" id="L268">                pointsNew.add(new LatLng(Double.parseDouble(coordinate[0]), Double.parseDouble(coordinate[1])));</span>
+            }
+<span class="fc" id="L270">            LatLng[] pointsResult = new LatLng[pointsNew.size()];</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">            for (int i = 0; i &lt; pointsNew.size(); i++) {</span>
+<span class="fc" id="L272">                pointsResult[i] = pointsNew.get(i);</span>
+            }
+<span class="fc" id="L274">            Region r = null;</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">            for (int i = 0; i &lt; region.length; i++)</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">                if (region[i].getId() == regionId) r = region[i];</span>
+<span class="fc" id="L277">            Vertrag v = null;</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">            for (int i = 0; i &lt; vertrag.length; i++)</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">                if (vertrag[i].getId() == vertragId) v = vertrag[i];</span>
+<span class="fc" id="L280">            feld.add(new Feld(id, art, flaeche, pointsResult, r, v));</span>
+<span class="fc" id="L281">            cursor.moveToNext();</span>
+<span class="fc" id="L282">        }</span>
+<span class="fc" id="L283">        Feld result[] = new Feld[feld.size()];</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">        for (int i = 0; i &lt; result.length; i++) {</span>
+<span class="fc" id="L285">            result[i] = feld.get(i);</span>
+        }
+<span class="fc" id="L287">        cursor.close();</span>
+<span class="fc" id="L288">        return result;</span>
+
+    }
+
+    /**
+     * method returns all data as a field Region from table region
+     *
+     * @return
+     */
+    public Region[] getRegion() {
+<span class="fc" id="L298">        ArrayList&lt;Region&gt; region = new ArrayList&lt;Region&gt;();</span>
+<span class="fc" id="L299">        String[] columns = {Datenbank.REGION_COLUMN_ID, Datenbank.REGION_COLUMN_BUNDESLAND, Datenbank.REGION_COLUMN_LAND, Datenbank.REGION_COLUMN_LANDKREIS, Datenbank.REGION_COLUMN_STADT};</span>
+<span class="fc" id="L300">        Cursor cursor = database.query(Datenbank.TABLE_REGION, columns, null, null, null, null, null, null);</span>
+<span class="fc" id="L301">        cursor.moveToFirst();</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">        while (!cursor.isAfterLast()) {</span>
+<span class="fc" id="L303">            int id = cursor.getInt(cursor.getColumnIndex(Datenbank.REGION_COLUMN_ID));</span>
+<span class="fc" id="L304">            String bundesland = cursor.getString(cursor.getColumnIndex(Datenbank.REGION_COLUMN_BUNDESLAND));</span>
+<span class="fc" id="L305">            String land = cursor.getString(cursor.getColumnIndex(Datenbank.REGION_COLUMN_LAND));</span>
+<span class="fc" id="L306">            String landkreis = cursor.getString(cursor.getColumnIndex(Datenbank.REGION_COLUMN_LANDKREIS));</span>
+<span class="fc" id="L307">            String stadt = cursor.getString(cursor.getColumnIndex(Datenbank.REGION_COLUMN_STADT));</span>
+<span class="fc" id="L308">            region.add(new Region(landkreis, land, bundesland, stadt, id));</span>
+<span class="fc" id="L309">            cursor.moveToNext();</span>
+<span class="fc" id="L310">        }</span>
+<span class="fc" id="L311">        Region result[] = new Region[region.size()];</span>
+<span class="fc bfc" id="L312" title="All 2 branches covered.">        for (int i = 0; i &lt; result.length; i++) {</span>
+<span class="fc" id="L313">            result[i] = region.get(i);</span>
+        }
+<span class="fc" id="L315">        cursor.close();</span>
+<span class="fc" id="L316">        return result;</span>
+    }
+
+    /**
+     * method returns all data as a field Schadensfall from table schadensfall
+     *
+     * @return
+     */
+    public Schadensfall[] getSchadensfall() {
+<span class="fc" id="L325">        ArrayList&lt;Schadensfall&gt; schadensfall = new ArrayList&lt;Schadensfall&gt;();</span>
+<span class="fc" id="L326">        String[] columns = {Datenbank.SCHADENSFALL_COLUMN_BILDER, Datenbank.SCHADENSFALL_COLUMN_REGION, Datenbank.SCHADENSFALL_COLUMN_SCHADENSPOSITION, Datenbank.SCHADENSFALL_COLUMN_FELD, Datenbank.SCHADENSFALL_COLUMN_DATUM, Datenbank.SCHADENSFALL_COLUMN_ID, Datenbank.SCHADENSFALL_COLUMN_SCHADENSART, Datenbank.SCHADENSFALL_COLUMN_STATUS, Datenbank.SCHADENSFALL_COLUMN_FLAECHE, Datenbank.SCHADENSFALL_COLUMN_GUTACHTER};</span>
+<span class="fc" id="L327">        Cursor cursor = database.query(Datenbank.TABLE_SCHADENSFALL, columns, null, null, null, null, null, null);</span>
+<span class="fc" id="L328">        cursor.moveToFirst();</span>
+<span class="fc" id="L329">        Region[] regions = getRegion();</span>
+<span class="fc" id="L330">        Feld[] felder = getFeld();</span>
+<span class="fc" id="L331">        Gutachter[] gutachter = getGutachter();</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">        while (!cursor.isAfterLast()) {</span>
+<span class="fc" id="L333">            int id = cursor.getInt(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_ID));</span>
+<span class="fc" id="L334">            int regionId = cursor.getInt(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_REGION));</span>
+<span class="fc" id="L335">            int feldId = cursor.getInt(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_FELD));</span>
+<span class="fc" id="L336">            int gutachterId = cursor.getInt(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_GUTACHTER));</span>
+<span class="fc" id="L337">            String art = cursor.getString(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_SCHADENSART));</span>
+<span class="fc" id="L338">            String bilder = cursor.getString(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_BILDER));</span>
+<span class="fc" id="L339">            String koordinaten = cursor.getString(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_SCHADENSPOSITION));</span>
+<span class="fc" id="L340">            String date = cursor.getString(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_DATUM));</span>
+<span class="fc" id="L341">            String status = cursor.getString(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_STATUS));</span>
+<span class="fc" id="L342">            Double flaeche = Double.parseDouble(cursor.getString(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_FLAECHE)));</span>
+<span class="fc" id="L343">            String[] latLng = koordinaten.split(&quot;;&quot;);</span>
+<span class="fc" id="L344">            String[] pic = bilder.split(&quot;;&quot;);</span>
+            //String[] datum = date.split(&quot;;&quot;);
+
+<span class="fc" id="L347">            ArrayList&lt;LatLng&gt; pointsNew = new ArrayList&lt;LatLng&gt;();</span>
+            //Date datumResult = new GregorianCalendar(Integer.parseInt(datum[2]), Integer.parseInt(datum[1]), Integer.parseInt(datum[0])).getTime();
+<span class="fc bfc" id="L349" title="All 2 branches covered.">            for (int i = 0; i &lt; latLng.length; i++) {</span>
+<span class="fc" id="L350">                String[] coordinate = latLng[i].split(&quot;,&quot;);</span>
+<span class="fc" id="L351">                pointsNew.add(new LatLng(Double.parseDouble(coordinate[0]), Double.parseDouble(coordinate[1])));</span>
+            }
+<span class="fc" id="L353">            LatLng[] pointsResult = new LatLng[pointsNew.size()];</span>
+<span class="fc bfc" id="L354" title="All 2 branches covered.">            for (int i = 0; i &lt; pointsNew.size(); i++) {</span>
+<span class="fc" id="L355">                pointsResult[i] = pointsNew.get(i);</span>
+            }
+<span class="fc" id="L357">            Region r = null;</span>
+<span class="fc bfc" id="L358" title="All 2 branches covered.">            for (int i = 0; i &lt; regions.length; i++)</span>
+<span class="pc bpc" id="L359" title="1 of 2 branches missed.">                if (regions[i].getId() == regionId) r = regions[i];</span>
+<span class="fc" id="L360">            Feld f = null;</span>
+<span class="fc bfc" id="L361" title="All 2 branches covered.">            for (int i = 0; i &lt; felder.length; i++)</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">                if (felder[i].getId() == feldId) f = felder[i];</span>
+<span class="fc" id="L363">            Gutachter g = null;</span>
+<span class="fc bfc" id="L364" title="All 2 branches covered.">            for (int i = 0; i &lt; gutachter.length; i++)</span>
+<span class="pc bpc" id="L365" title="1 of 2 branches missed.">                if (gutachter[i].getId() == gutachterId) g = gutachter[i];</span>
+<span class="fc" id="L366">            schadensfall.add(new Schadensfall(art, f, pointsResult, status, r, date, pic, id, flaeche, g));</span>
+<span class="fc" id="L367">            cursor.moveToNext();</span>
+<span class="fc" id="L368">        }</span>
+<span class="fc" id="L369">        Schadensfall result[] = new Schadensfall[schadensfall.size()];</span>
+<span class="fc bfc" id="L370" title="All 2 branches covered.">        for (int i = 0; i &lt; result.length; i++) {</span>
+<span class="fc" id="L371">            result[i] = schadensfall.get(i);</span>
+        }
+<span class="fc" id="L373">        cursor.close();</span>
+<span class="fc" id="L374">        return result;</span>
+    }
+
+    /**
+     * initialize the database with some data
+     */
+    public void data() {
+<span class="fc" id="L381">        Benutzer benutzer = new Benutzer(&quot;Max&quot;, &quot;Mustermann&quot;, &quot;Stuttgart, Königsstraße 1&quot;, 1, &quot;1234&quot;);</span>
+<span class="fc" id="L382">        Benutzer benutzer2 = new Benutzer(&quot;Maxine&quot;, &quot;Secoundo&quot;, &quot;Stuttgart, Königsstraße 2&quot;, 2, &quot;1234&quot;);</span>
+<span class="fc" id="L383">        Gutachter gutachter = new Gutachter(&quot;Gustav&quot;, &quot;Gutachter&quot;, &quot;Stuttgart, Königsstraße 2&quot;, 1, &quot;1234&quot;);</span>
+<span class="fc" id="L384">        Vertrag vertrag = new Vertrag(1, benutzer, &quot;Haftpflichtversicherung&quot;);</span>
+<span class="fc" id="L385">        Vertrag vertrag2 = new Vertrag(2, benutzer2, &quot;Frost-Schutz&quot;);</span>
+<span class="fc" id="L386">        LatLng p1 = new LatLng(48.7759465, 9.1821322);</span>
+<span class="fc" id="L387">        LatLng p2 =  new LatLng(48.7769465, 9.1821322);</span>
+<span class="fc" id="L388">        LatLng p3 = new LatLng(48.7759465, 9.1831322);</span>
+<span class="fc" id="L389">        LatLng p4 = new LatLng(48.7769465, 9.1831322);</span>
+<span class="fc" id="L390">        LatLng[] koordinaten = {p1,p2, p4,p3, p1};</span>
+<span class="fc" id="L391">        LatLng[] koordinaten3 = {new LatLng(48.7779465, 9.1821322),new LatLng(48.7769465, 9.1821322), new LatLng(48.7769465, 9.1831322),new LatLng(48.7779465, 9.1831322), new LatLng(48.7779465, 9.1821322)};</span>
+        //add defined string datum
+<span class="fc" id="L393">        Date date = new Date(1514119500105L);</span>
+<span class="fc" id="L394">        String datumString = date.toString();</span>
+<span class="fc" id="L395">        String sub = datumString.substring(0, 10);</span>
+<span class="fc" id="L396">        String sub2 = datumString.substring(datumString.length()-4, datumString.length());</span>
+<span class="fc" id="L397">        String dateRe = sub + &quot; - &quot; + sub2;</span>
+
+<span class="fc" id="L399">        Region region = new Region(&quot;Stuttgart&quot;, &quot;Deutschland&quot;, &quot;Baden-Württemberg&quot;, &quot;Stuttgart&quot;, 1);</span>
+<span class="fc" id="L400">        Feld feld = new Feld(1, &quot;Mais&quot;, 40.0, koordinaten, region, vertrag);</span>
+<span class="fc" id="L401">        Feld feld2 = new Feld(2, &quot;Weizen&quot;, 32.0, koordinaten3, region, vertrag2);</span>
+<span class="fc" id="L402">        String[] photo = {&quot;bilder.jpeg&quot;};</span>
+<span class="fc" id="L403">        Schadensfall schadensfall = new Schadensfall(&quot;Erdbeben&quot;, feld, koordinaten, &quot;gemeldet&quot;, region, dateRe, photo, 1, 40.0, gutachter);</span>
+<span class="fc" id="L404">        Schadensfall schadensfall2 = new Schadensfall(&quot;Wildschaden&quot;, feld2, koordinaten3, &quot;gemeldet&quot;, region, dateRe, photo, 2, 32.0, gutachter);</span>
+<span class="fc" id="L405">        addBenutzer(benutzer);</span>
+<span class="fc" id="L406">        addBenutzer(benutzer2);</span>
+<span class="fc" id="L407">        addFeld(feld);</span>
+<span class="fc" id="L408">        addFeld(feld2);</span>
+<span class="fc" id="L409">        addGutachter(gutachter);</span>
+<span class="fc" id="L410">        addRegion(region);</span>
+<span class="fc" id="L411">        addSchadensfall(schadensfall);</span>
+<span class="fc" id="L412">        addSchadensfall(schadensfall2);</span>
+<span class="fc" id="L413">        addVertrag(vertrag);</span>
+<span class="fc" id="L414">        addVertrag(vertrag2);</span>
+<span class="fc" id="L415">    }</span>
+
+    /**
+     * update table benutzer with new Benutzer data
+     *
+     * @param benutzer
+     */
+    public void updateBenutzer(Benutzer benutzer) {
+<span class="fc" id="L423">        ContentValues values = new ContentValues();</span>
+<span class="fc" id="L424">        values.put(Datenbank.BENUTZER_COLUMN_ADRESSE, benutzer.getAdresse());</span>
+<span class="fc" id="L425">        values.put(Datenbank.BENUTZER_COLUMN_NACHNAME, benutzer.getNachname());</span>
+<span class="fc" id="L426">        values.put(Datenbank.BENUTZER_COLUMN_VORNAME, benutzer.getVorname());</span>
+<span class="fc" id="L427">        values.put(Datenbank.BENUTZER_COLUMN_PASSWORT, benutzer.getPasswort());</span>
+<span class="fc" id="L428">        database.update(Datenbank.TABLE_BENUTZER, values, Datenbank.BENUTZER_COLUMN_ID + &quot;=&quot; + benutzer.getId(), null);</span>
+<span class="fc" id="L429">    }</span>
+
+    /**
+     * update table gutachter with new Gutachter data
+     *
+     * @param gutachter
+     */
+    public void updateGutachter(Gutachter gutachter) {
+<span class="fc" id="L437">        ContentValues values = new ContentValues();</span>
+<span class="fc" id="L438">        values.put(Datenbank.GUTACHTER_COLUMN_ADRESSE, gutachter.getAdresse());</span>
+<span class="fc" id="L439">        values.put(Datenbank.GUTACHTER_COLUMN_NACHNAME, gutachter.getNachname());</span>
+<span class="fc" id="L440">        values.put(Datenbank.GUTACHTER_COLUMN_VORNAME, gutachter.getVorname());</span>
+<span class="fc" id="L441">        values.put(Datenbank.GUTACHTER_COLUMN_PASSWORT, gutachter.getPasswort());</span>
+<span class="fc" id="L442">        database.update(Datenbank.TABLE_GUTACHTER, values, Datenbank.GUTACHTER_COLUMN_ID + &quot;=&quot; + gutachter.getId(), null);</span>
+<span class="fc" id="L443">    }</span>
+
+    /**
+     * update table vertrag with new Vertrag data
+     *
+     * @param vertrag
+     */
+    public void updateVertrag(Vertrag vertrag) {
+<span class="nc" id="L451">        ContentValues values = new ContentValues();</span>
+<span class="nc" id="L452">        values.put(Datenbank.VERTRAG_COLUMN_BENUTZER, vertrag.getPerson().getId());</span>
+<span class="nc" id="L453">        values.put(Datenbank.VERTRAG_COLUMN_ART, vertrag.getArt());</span>
+<span class="nc" id="L454">        database.update(Datenbank.TABLE_VERTRAG, values, Datenbank.VERTRAG_COLUMN_ID + &quot;=&quot; + vertrag.getId(), null);</span>
+<span class="nc" id="L455">    }</span>
+
+    /**
+     * update table feld with new Feld data
+     *
+     * @param feld
+     */
+    public void updateFeld(Feld feld) {
+<span class="fc" id="L463">        ContentValues values = new ContentValues();</span>
+<span class="fc" id="L464">        values.put(Datenbank.FELD_COLUMN_ART, feld.getArt());</span>
+<span class="fc" id="L465">        values.put(Datenbank.FELD_COLUMN_FLAECHE, String.valueOf(feld.getFlaeche()));</span>
+<span class="fc" id="L466">        values.put(Datenbank.FELD_COLUMN_REGION, feld.getRegion().getId());</span>
+<span class="fc" id="L467">        String koordinaten = &quot;&quot;;</span>
+<span class="fc bfc" id="L468" title="All 2 branches covered.">        for (int i = 0; i &lt; feld.getKoordinaten().length; i++) {</span>
+<span class="fc" id="L469">            koordinaten += String.valueOf(feld.getKoordinaten()[i].latitude) + &quot;,&quot; + String.valueOf(feld.getKoordinaten()[i].longitude) + &quot;;&quot;;</span>
+        }
+<span class="fc" id="L471">        values.put(Datenbank.FELD_COLUMN_KOORDINATEN, koordinaten);</span>
+<span class="fc" id="L472">        values.put(Datenbank.FELD_COLUMN_VERTRAG, feld.getVertrag().getId());</span>
+<span class="fc" id="L473">        database.update(Datenbank.TABLE_FELD, values, Datenbank.FELD_COLUMN_ID + &quot;=&quot; + feld.getId(), null);</span>
+<span class="fc" id="L474">    }</span>
+
+    /**
+     * update table region with new Region data
+     *
+     * @param region
+     */
+    public void updateRegion(Region region) {
+<span class="fc" id="L482">        ContentValues values = new ContentValues();</span>
+<span class="fc" id="L483">        values.put(Datenbank.REGION_COLUMN_STADT, region.getStadt());</span>
+<span class="fc" id="L484">        values.put(Datenbank.REGION_COLUMN_BUNDESLAND, region.getBundesland());</span>
+<span class="fc" id="L485">        values.put(Datenbank.REGION_COLUMN_LAND, region.getLand());</span>
+<span class="fc" id="L486">        values.put(Datenbank.REGION_COLUMN_LANDKREIS, region.getLandkreis());</span>
+<span class="fc" id="L487">        database.update(Datenbank.TABLE_REGION, values, Datenbank.REGION_COLUMN_ID + &quot;=&quot; + region.getId(), null);</span>
+<span class="fc" id="L488">    }</span>
+
+    /**
+     * update table schadensfall with new Schadensfall data
+     *
+     * @param schadensfall
+     */
+    public void updateSchadensfall(Schadensfall schadensfall) {
+<span class="fc" id="L496">        ContentValues values = new ContentValues();</span>
+<span class="fc" id="L497">        String bilder = &quot;&quot;;</span>
+<span class="fc" id="L498">        String koordinaten = &quot;&quot;;</span>
+<span class="fc" id="L499">        String date = &quot;&quot;;</span>
+        //add each pic to a string separated by ;
+<span class="fc bfc" id="L501" title="All 2 branches covered.">        for (int i = 0; i &lt; schadensfall.getBilder().length; i++) {</span>
+<span class="fc" id="L502">            bilder += schadensfall.getBilder()[i] + &quot;;&quot;;</span>
+        }
+        //add x-coordinate,y-coordinate and separate each coordinate with ;
+<span class="fc bfc" id="L505" title="All 2 branches covered.">        for (int i = 0; i &lt; schadensfall.getSchadensposition().length; i++) {</span>
+<span class="fc" id="L506">            koordinaten += String.valueOf(schadensfall.getSchadensposition()[i].latitude) + &quot;,&quot; + String.valueOf(schadensfall.getSchadensposition()[i].longitude) + &quot;;&quot;;</span>
+        }
+        //add day;month;year to a string
+<span class="fc" id="L509">        String datumString = schadensfall.getDatum();</span>
+<span class="fc" id="L510">        String sub = datumString.substring(0, 10);</span>
+<span class="fc" id="L511">        String sub2 = datumString.substring(datumString.length()-4, datumString.length());</span>
+<span class="fc" id="L512">        String datumRe = sub + &quot; - &quot; + sub2;</span>
+
+        //date = schadensfall.getDatum().toString();
+<span class="fc" id="L515">        values.put(Datenbank.SCHADENSFALL_COLUMN_BILDER, bilder);</span>
+<span class="fc" id="L516">        values.put(Datenbank.SCHADENSFALL_COLUMN_SCHADENSPOSITION, koordinaten);</span>
+<span class="fc" id="L517">        values.put(Datenbank.SCHADENSFALL_COLUMN_DATUM, datumRe);</span>
+<span class="fc" id="L518">        values.put(Datenbank.SCHADENSFALL_COLUMN_FELD, schadensfall.getFeld().getId());</span>
+<span class="fc" id="L519">        values.put(Datenbank.SCHADENSFALL_COLUMN_REGION, schadensfall.getRegion().getId());</span>
+<span class="fc" id="L520">        values.put(Datenbank.SCHADENSFALL_COLUMN_SCHADENSART, schadensfall.getSchadensart());</span>
+<span class="fc" id="L521">        values.put(Datenbank.SCHADENSFALL_COLUMN_STATUS, schadensfall.getStatus());</span>
+<span class="fc" id="L522">        values.put(Datenbank.SCHADENSFALL_COLUMN_GUTACHTER, schadensfall.getGutachter().getId());</span>
+<span class="fc" id="L523">        values.put(Datenbank.SCHADENSFALL_COLUMN_FLAECHE, schadensfall.getFlaeche());</span>
+<span class="fc" id="L524">        database.update(Datenbank.TABLE_SCHADENSFALL, values, Datenbank.SCHADENSFALL_COLUMN_ID + &quot;=&quot; + schadensfall.getId(), null);</span>
+<span class="fc" id="L525">    }</span>
+
+    /**
+     * getter for a contract by id
+     *
+     * @param identity
+     * @return
+     */
+    public Vertrag getVertragById(int identity) {
+<span class="fc" id="L534">        String[] columns = {Datenbank.VERTRAG_COLUMN_ID, Datenbank.VERTRAG_COLUMN_BENUTZER, Datenbank.VERTRAG_COLUMN_ART};</span>
+<span class="fc" id="L535">        Cursor cursor = database.query(Datenbank.TABLE_VERTRAG, columns, identity + &quot;=&quot; + Datenbank.VERTRAG_COLUMN_ID, null, null, null, null, null);</span>
+<span class="fc" id="L536">        cursor.moveToFirst();</span>
+<span class="fc" id="L537">        int id = cursor.getInt(cursor.getColumnIndex(Datenbank.VERTRAG_COLUMN_ID));</span>
+<span class="fc" id="L538">        int benutzerId = cursor.getInt(cursor.getColumnIndex(Datenbank.VERTRAG_COLUMN_BENUTZER));</span>
+<span class="fc" id="L539">        String art = cursor.getString(cursor.getColumnIndex(Datenbank.VERTRAG_COLUMN_ART));</span>
+<span class="fc" id="L540">        Benutzer benutzer1 = getBenutzerById(benutzerId);</span>
+<span class="fc" id="L541">        cursor.close();</span>
+<span class="fc" id="L542">        return new Vertrag(id, benutzer1, art);</span>
+    }
+
+    /**
+     * getter for a user by id
+     *
+     * @param identity
+     * @return
+     */
+    public Benutzer getBenutzerById(int identity) {
+<span class="fc" id="L552">        String[] columns = {Datenbank.BENUTZER_COLUMN_ID, Datenbank.BENUTZER_COLUMN_VORNAME, Datenbank.BENUTZER_COLUMN_NACHNAME, Datenbank.BENUTZER_COLUMN_ADRESSE, Datenbank.BENUTZER_COLUMN_PASSWORT};</span>
+<span class="fc" id="L553">        Cursor cursor = database.query(Datenbank.TABLE_BENUTZER, columns, identity + &quot;=&quot; + Datenbank.BENUTZER_COLUMN_ID, null, null, null, null, null);</span>
+<span class="fc" id="L554">        cursor.moveToFirst();</span>
+<span class="fc" id="L555">        int id = cursor.getInt(cursor.getColumnIndex(Datenbank.BENUTZER_COLUMN_ID));</span>
+<span class="fc" id="L556">        String vorname = cursor.getString(cursor.getColumnIndex(Datenbank.BENUTZER_COLUMN_VORNAME));</span>
+<span class="fc" id="L557">        String nachname = cursor.getString(cursor.getColumnIndex(Datenbank.BENUTZER_COLUMN_NACHNAME));</span>
+<span class="fc" id="L558">        String adresse = cursor.getString(cursor.getColumnIndex(Datenbank.BENUTZER_COLUMN_ADRESSE));</span>
+<span class="fc" id="L559">        String passwort = cursor.getString(cursor.getColumnIndex(Datenbank.BENUTZER_COLUMN_PASSWORT));</span>
+<span class="fc" id="L560">        cursor.close();</span>
+<span class="fc" id="L561">        return new Benutzer(vorname, nachname, adresse, id, passwort);</span>
+    }
+
+    /**
+     * getter for an expert by id
+     *
+     * @param identity
+     * @return
+     */
+    public Gutachter getGutachterById(int identity) {
+<span class="fc" id="L571">        String[] columns = {Datenbank.GUTACHTER_COLUMN_ID, Datenbank.GUTACHTER_COLUMN_VORNAME, Datenbank.GUTACHTER_COLUMN_NACHNAME, Datenbank.GUTACHTER_COLUMN_ADRESSE, Datenbank.GUTACHTER_COLUMN_PASSWORT};</span>
+<span class="fc" id="L572">        Cursor cursor = database.query(Datenbank.TABLE_GUTACHTER, columns, identity + &quot;=&quot; + Datenbank.GUTACHTER_COLUMN_ID, null, null, null, null, null);</span>
+<span class="fc" id="L573">        cursor.moveToFirst();</span>
+<span class="fc" id="L574">        int id = cursor.getInt(cursor.getColumnIndex(Datenbank.GUTACHTER_COLUMN_ID));</span>
+<span class="fc" id="L575">        String vorname = cursor.getString(cursor.getColumnIndex(Datenbank.GUTACHTER_COLUMN_VORNAME));</span>
+<span class="fc" id="L576">        String nachname = cursor.getString(cursor.getColumnIndex(Datenbank.GUTACHTER_COLUMN_NACHNAME));</span>
+<span class="fc" id="L577">        String adresse = cursor.getString(cursor.getColumnIndex(Datenbank.GUTACHTER_COLUMN_ADRESSE));</span>
+<span class="fc" id="L578">        String passwort = cursor.getString(cursor.getColumnIndex(Datenbank.GUTACHTER_COLUMN_PASSWORT));</span>
+<span class="fc" id="L579">        cursor.close();</span>
+<span class="fc" id="L580">        return new Gutachter(vorname, nachname, adresse, id, passwort);</span>
+    }
+
+    /**
+     * getter for a damage case by id
+     *
+     * @param identity
+     * @return
+     */
+    public Schadensfall getSchadensfallById(int identity) {
+<span class="fc" id="L590">        String[] columns = {Datenbank.SCHADENSFALL_COLUMN_BILDER, Datenbank.SCHADENSFALL_COLUMN_REGION, Datenbank.SCHADENSFALL_COLUMN_SCHADENSPOSITION, Datenbank.SCHADENSFALL_COLUMN_FELD, Datenbank.SCHADENSFALL_COLUMN_DATUM, Datenbank.SCHADENSFALL_COLUMN_ID, Datenbank.SCHADENSFALL_COLUMN_SCHADENSART, Datenbank.SCHADENSFALL_COLUMN_STATUS, Datenbank.SCHADENSFALL_COLUMN_FLAECHE, Datenbank.SCHADENSFALL_COLUMN_GUTACHTER};</span>
+<span class="fc" id="L591">        Cursor cursor = database.query(Datenbank.TABLE_SCHADENSFALL, columns, identity + &quot;=&quot; + Datenbank.SCHADENSFALL_COLUMN_ID, null, null, null, null, null);</span>
+<span class="fc" id="L592">        cursor.moveToFirst();</span>
+<span class="fc" id="L593">        int id = cursor.getInt(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_ID));</span>
+<span class="fc" id="L594">        int regionId = cursor.getInt(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_REGION));</span>
+<span class="fc" id="L595">        int feldId = cursor.getInt(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_FELD));</span>
+<span class="fc" id="L596">        String art = cursor.getString(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_SCHADENSART));</span>
+<span class="fc" id="L597">        String bilder = cursor.getString(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_BILDER));</span>
+<span class="fc" id="L598">        String koordinaten = cursor.getString(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_SCHADENSPOSITION));</span>
+<span class="fc" id="L599">        String date = cursor.getString(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_DATUM));</span>
+<span class="fc" id="L600">        String status = cursor.getString(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_STATUS));</span>
+<span class="fc" id="L601">        int gutachterId = cursor.getInt(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_GUTACHTER));</span>
+<span class="fc" id="L602">        Double flaeche = Double.valueOf(cursor.getString(cursor.getColumnIndex(Datenbank.SCHADENSFALL_COLUMN_FLAECHE)));</span>
+<span class="fc" id="L603">        String[] latLng = koordinaten.split(&quot;;&quot;);</span>
+<span class="fc" id="L604">        String[] photos = bilder.split(&quot;;&quot;);</span>
+        //String[] datum = date.split(&quot;;&quot;);
+
+<span class="fc" id="L607">        ArrayList&lt;LatLng&gt; pointsNew = new ArrayList&lt;LatLng&gt;();</span>
+        //Date datumResult = new GregorianCalendar(Integer.parseInt(datum[2]), Integer.parseInt(datum[1]), Integer.parseInt(datum[0])).getTime();
+<span class="fc bfc" id="L609" title="All 2 branches covered.">        for (int i = 0; i &lt; latLng.length; i++) {</span>
+<span class="fc" id="L610">            String[] coordinate = latLng[i].split(&quot;,&quot;);</span>
+<span class="fc" id="L611">            pointsNew.add(new LatLng(Double.parseDouble(coordinate[0]), Double.parseDouble(coordinate[1])));</span>
+        }
+<span class="fc" id="L613">        LatLng[] pointsResult = new LatLng[pointsNew.size()];</span>
+<span class="fc bfc" id="L614" title="All 2 branches covered.">        for (int i = 0; i &lt; pointsNew.size(); i++) {</span>
+<span class="fc" id="L615">            pointsResult[i] = pointsNew.get(i);</span>
+        }
+<span class="fc" id="L617">        Region r = getRegionById(regionId);</span>
+<span class="fc" id="L618">        Feld f = getFeldById(feldId);</span>
+<span class="fc" id="L619">        Gutachter g = getGutachterById(gutachterId);</span>
+<span class="fc" id="L620">        cursor.close();</span>
+<span class="fc" id="L621">        return new Schadensfall(art, f, pointsResult, status, r, date, photos, id, flaeche, g);</span>
+    }
+
+    /**
+     * getter for a field by id
+     *
+     * @param identity
+     * @return
+     */
+    public Feld getFeldById(int identity) {
+<span class="fc" id="L631">        String[] columns = {Datenbank.FELD_COLUMN_ID, Datenbank.FELD_COLUMN_ART, Datenbank.FELD_COLUMN_FLAECHE, Datenbank.FELD_COLUMN_KOORDINATEN, Datenbank.FELD_COLUMN_REGION, Datenbank.FELD_COLUMN_VERTRAG};</span>
+<span class="fc" id="L632">        Cursor cursor = database.query(Datenbank.TABLE_FELD, columns, identity + &quot;=&quot; + Datenbank.FELD_COLUMN_ID, null, null, null, null, null);</span>
+<span class="fc" id="L633">        cursor.moveToFirst();</span>
+<span class="fc" id="L634">        int id = cursor.getInt(cursor.getColumnIndex(Datenbank.FELD_COLUMN_ID));</span>
+<span class="fc" id="L635">        int regionId = cursor.getInt(cursor.getColumnIndex(Datenbank.FELD_COLUMN_REGION));</span>
+<span class="fc" id="L636">        int vertragId = cursor.getInt(cursor.getColumnIndex(Datenbank.FELD_COLUMN_VERTRAG));</span>
+<span class="fc" id="L637">        String art = cursor.getString(cursor.getColumnIndex(Datenbank.FELD_COLUMN_ART));</span>
+<span class="fc" id="L638">        Double flaeche = Double.parseDouble(cursor.getString(cursor.getColumnIndex(Datenbank.FELD_COLUMN_FLAECHE)));</span>
+<span class="fc" id="L639">        String koordinaten = cursor.getString(cursor.getColumnIndex(Datenbank.FELD_COLUMN_KOORDINATEN));</span>
+<span class="fc" id="L640">        String[] latLng = koordinaten.split(&quot;;&quot;);</span>
+<span class="fc" id="L641">        ArrayList&lt;LatLng&gt; pointsNew = new ArrayList&lt;LatLng&gt;();</span>
+<span class="fc bfc" id="L642" title="All 2 branches covered.">        for (int i = 0; i &lt; latLng.length; i++) {</span>
+<span class="fc" id="L643">            String[] coordinate = latLng[i].split(&quot;,&quot;);</span>
+<span class="fc" id="L644">            pointsNew.add(new LatLng(Double.parseDouble(coordinate[0]), Double.parseDouble(coordinate[1])));</span>
+        }
+<span class="fc" id="L646">        LatLng[] pointsResult = new LatLng[pointsNew.size()];</span>
+<span class="fc bfc" id="L647" title="All 2 branches covered.">        for (int i = 0; i &lt; pointsNew.size(); i++) {</span>
+<span class="fc" id="L648">            pointsResult[i] = pointsNew.get(i);</span>
+        }
+<span class="fc" id="L650">        Region r = getRegionById(regionId);</span>
+<span class="fc" id="L651">        Vertrag v = getVertragById(vertragId);</span>
+<span class="fc" id="L652">        cursor.close();</span>
+<span class="fc" id="L653">        return new Feld(id, art, flaeche, pointsResult, r, v);</span>
+    }
+
+    /**
+     * getter for a region by id
+     *
+     * @param identity
+     * @return
+     */
+    public Region getRegionById(int identity) {
+<span class="fc" id="L663">        String[] columns = {Datenbank.REGION_COLUMN_ID, Datenbank.REGION_COLUMN_BUNDESLAND, Datenbank.REGION_COLUMN_LAND, Datenbank.REGION_COLUMN_LANDKREIS, Datenbank.REGION_COLUMN_STADT};</span>
+<span class="fc" id="L664">        Cursor cursor = database.query(Datenbank.TABLE_REGION, columns, identity + &quot;=&quot; + Datenbank.REGION_COLUMN_ID, null, null, null, null, null);</span>
+<span class="fc" id="L665">        cursor.moveToFirst();</span>
+<span class="fc" id="L666">        int id = cursor.getInt(cursor.getColumnIndex(Datenbank.REGION_COLUMN_ID));</span>
+<span class="fc" id="L667">        String bundesland = cursor.getString(cursor.getColumnIndex(Datenbank.REGION_COLUMN_BUNDESLAND));</span>
+<span class="fc" id="L668">        String land = cursor.getString(cursor.getColumnIndex(Datenbank.REGION_COLUMN_LAND));</span>
+<span class="fc" id="L669">        String landkreis = cursor.getString(cursor.getColumnIndex(Datenbank.REGION_COLUMN_LANDKREIS));</span>
+<span class="fc" id="L670">        String stadt = cursor.getString(cursor.getColumnIndex(Datenbank.REGION_COLUMN_STADT));</span>
+<span class="fc" id="L671">        cursor.close();</span>
+<span class="fc" id="L672">        return new Region(landkreis, land, bundesland, stadt, id);</span>
+    }
+
+    /**
+     * delete a contract out of the database and also delete a damage case and a field where the contract is involved
+     *
+     * @param vertrag
+     */
+    public void removeVertrag(Vertrag vertrag) {
+<span class="fc" id="L681">        database.execSQL(&quot;DELETE FROM &quot; + Datenbank.TABLE_FELD + &quot; WHERE &quot; + Datenbank.FELD_COLUMN_VERTRAG + &quot;=&quot; + vertrag.getId());</span>
+<span class="fc" id="L682">        database.execSQL(&quot;DELETE FROM &quot; + Datenbank.TABLE_VERTRAG + &quot; WHERE &quot; + Datenbank.VERTRAG_COLUMN_ID + &quot;=&quot; + vertrag.getId());</span>
+<span class="fc" id="L683">    }</span>
+
+    /**
+     * Method removes a field from a contract and adds the field to field without a contract
+     * @param feld
+     */
+    public void removeFeldFromVertrag(Feld feld){
+<span class="fc" id="L690">        database.execSQL(&quot;DELETE FROM &quot; + Datenbank.TABLE_FELD + &quot; WHERE &quot; + Datenbank.FELD_COLUMN_ID + &quot;=&quot; + feld.getId());</span>
+<span class="fc" id="L691">    }</span>
+
+    /**
+     * delete a user out of the database and also delete all contracts where the user is involved
+     *
+     * @param benutzer
+     */
+    public void removeBenutzer(Benutzer benutzer) {
+<span class="pc bpc" id="L699" title="1 of 2 branches missed.">        if(Datenbank.VERTRAG_COLUMN_BENUTZER!=null)database.execSQL(&quot;DELETE FROM &quot; + Datenbank.TABLE_VERTRAG + &quot; WHERE &quot; + Datenbank.VERTRAG_COLUMN_BENUTZER + &quot;=&quot; + benutzer.getId());</span>
+<span class="fc" id="L700">        database.execSQL(&quot;DELETE FROM &quot; + Datenbank.TABLE_BENUTZER + &quot; WHERE &quot; + Datenbank.BENUTZER_COLUMN_ID + &quot;=&quot; + benutzer.getId());</span>
+<span class="fc" id="L701">    }</span>
+
+    /**
+     * delete a expert out of the database
+     *
+     * @param gutachter
+     */
+    public void removeGutachter(Gutachter gutachter) {
+<span class="fc" id="L709">        database.execSQL(&quot;DELETE FROM &quot; + Datenbank.TABLE_GUTACHTER + &quot; WHERE &quot; + Datenbank.GUTACHTER_COLUMN_ID + &quot;=&quot; + gutachter.getId());</span>
+<span class="fc" id="L710">    }</span>
+
+    /**
+     * delete a field from the database and also delete a damage case where the field is involved
+     *
+     * @param feld
+     */
+    public void removeFeld(Feld feld) {
+<span class="fc" id="L718">        database.execSQL(&quot;DELETE FROM &quot; + Datenbank.TABLE_FELD + &quot; WHERE &quot; + Datenbank.FELD_COLUMN_ID + &quot;=&quot; + feld.getId());</span>
+<span class="fc" id="L719">        database.execSQL(&quot;DELETE FROM &quot; + Datenbank.TABLE_SCHADENSFALL + &quot; WHERE &quot; + Datenbank.SCHADENSFALL_COLUMN_FELD + &quot;=&quot; + feld.getId());</span>
+<span class="fc" id="L720">    }</span>
+
+    /**
+     * delete a damage case
+     *
+     * @param schadensfall
+     */
+    public void removeSchadensfall(Schadensfall schadensfall) {
+<span class="fc" id="L728">        database.execSQL(&quot;DELETE FROM &quot; + Datenbank.TABLE_SCHADENSFALL + &quot; WHERE &quot; + Datenbank.SCHADENSFALL_COLUMN_ID + &quot;=&quot; + schadensfall.getId());</span>
+<span class="fc" id="L729">    }</span>
+
+    /**
+     * delete a region out of the database and also delete a damage case and field where the region is involved
+     *
+     * @param region
+     */
+    public void removeRegion(Region region) {
+        //database.execSQL(&quot;DELETE FROM &quot; + Datenbank.TABLE_SCHADENSFALL + &quot; WHERE &quot; + Datenbank.SCHADENSFALL_COLUMN_REGION + &quot;=&quot; + region.getId());
+        //database.execSQL(&quot;DELETE FROM &quot; + Datenbank.TABLE_FELD + &quot; WHERE &quot; + Datenbank.FELD_COLUMN_REGION + &quot;=&quot; + region.getId());
+<span class="fc" id="L739">        database.execSQL(&quot;DELETE FROM &quot; + Datenbank.TABLE_REGION + &quot; WHERE &quot; + Datenbank.REGION_COLUMN_ID + &quot;=&quot; + region.getId());</span>
+<span class="fc" id="L740">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span>Generated by the Android Gradle plugin 2.3.3</div></body></html>

@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>LoginActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debugAndroidTest</a> &gt; <a href="index.source.html" class="el_package">de.uni_stuttgart.informatik.sopra.sopraapp</a> &gt; <span class="el_source">LoginActivity.java</span></div><h1>LoginActivity.java</h1><pre class="source lang-java linenums">package de.uni_stuttgart.informatik.sopra.sopraapp;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+/**
+ * This Activity lets the user log in to his user account
+ *
+ * @author Patrick Koss
+ * @author Sarah Gutierrez Munoz
+ * @author Michael Hersam
+ */
+<span class="fc" id="L30">public class LoginActivity extends AppCompatActivity  {</span>
+
+    //Keep track of the login task to ensure we can cancel it if requested.
+<span class="fc" id="L33">    private UserLoginTask mAuthTask = null;</span>
+
+    // UI references.
+    private EditText mUserIdView;
+    private EditText mPasswordView;
+    private Button signInButton;
+    private ProgressBar progressBar;
+    private Spinner spinner;
+    private DatenbankDaten db;
+    private int enteredID;
+    private String enteredPassword;
+    private String selectedRole;
+    private String userFullName;
+
+    //TODO: debug variable, set it on false or delete everything related to it before release
+<span class="fc" id="L48">    private Boolean debugMode = false;</span>
+
+    /**
+     * method is called when activity is created, it initialize the activity
+     * @param savedInstanceState
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L56">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L57">        setContentView(R.layout.activity_login);</span>
+
+        // Set up the login form.
+<span class="fc" id="L60">        mUserIdView = findViewById(R.id.userid);</span>
+<span class="fc" id="L61">        progressBar = findViewById(R.id.progress_bar);</span>
+<span class="fc" id="L62">        mPasswordView = findViewById(R.id.password);</span>
+<span class="fc" id="L63">        spinner = findViewById(R.id.RoleSpinner);</span>
+<span class="fc" id="L64">        enteredPassword = &quot;&quot;;</span>
+        //setup database connection
+<span class="fc" id="L66">        db = new DatenbankDaten(getApplicationContext());</span>
+<span class="fc" id="L67">        db.open();</span>
+
+        //make sure database is not empty
+<span class="pc bpc" id="L70" title="1 of 4 branches missed.">        if (db.getBenutzer().length == 0 || db.getGutachter().length == 0){</span>
+<span class="fc" id="L71">            db.data();</span>
+        }
+
+
+<span class="fc" id="L75">        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {</span>
+            @Override
+            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+<span class="nc bnc" id="L78" title="All 4 branches missed.">                if (id == R.id.login || id == EditorInfo.IME_NULL) {</span>
+                    //attemptLogin();
+<span class="nc" id="L80">                    signInButton.performClick();</span>
+<span class="nc" id="L81">                    return true;</span>
+                }
+<span class="nc" id="L83">                return false;</span>
+            }
+        });
+<span class="fc" id="L86">        final Intent mainActivityIntent = new Intent(this, MainActivity.class);</span>
+
+        //TODO: delete this clause or set debugMode to false before release.
+        //skips the login procedure and starts the mainActivity right away
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">        if (debugMode){</span>
+<span class="nc" id="L91">            mainActivityIntent.putExtra(&quot;userID&quot;, (int) 1);</span>
+<span class="nc" id="L92">            mainActivityIntent.putExtra(&quot;role&quot;, (String) spinner.getItemAtPosition(1).toString());</span>
+<span class="nc" id="L93">            mainActivityIntent.putExtra(&quot;userFullName&quot;,(String) db.getGutachterById(1).getFullName());</span>
+<span class="nc" id="L94">            db.close();</span>
+<span class="nc" id="L95">            startActivity(mainActivityIntent);</span>
+<span class="nc" id="L96">            finish();</span>
+        }
+
+<span class="fc" id="L99">        signInButton = findViewById(R.id.sign_in_button);</span>
+<span class="fc" id="L100">        signInButton.setOnClickListener(new OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+
+<span class="fc" id="L104">                mAuthTask = null;</span>
+<span class="fc" id="L105">                selectedRole = spinner.getSelectedItem().toString();</span>
+                //check TextView not empty and valid IDs should not be higher than 2^32 otherwise use long instead of int
+<span class="fc bfc" id="L107" title="All 2 branches covered.">                if(mUserIdView.getText().toString().length()&gt;=1 &amp;&amp;</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">                        mUserIdView.getText().toString().length()&lt;= 18 &amp;&amp;</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">                        Long.parseLong(mUserIdView.getText().toString()) &lt;= Integer.MAX_VALUE){</span>
+<span class="fc" id="L110">                    enteredID = Integer.parseInt(mUserIdView.getText().toString());</span>
+                }else{
+                    // the user entered an invalid ID, set enteredID to some unassigned ID to trigger the exception in isUserIDValid()
+<span class="fc" id="L113">                    enteredID = -1;</span>
+                }
+<span class="fc" id="L115">                enteredPassword = mPasswordView.getText().toString();</span>
+<span class="fc" id="L116">                attemptLogin();</span>
+                try {
+<span class="fc" id="L118">                    Boolean loginIsValid = mAuthTask.get();</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">                    if(!loginIsValid){</span>
+<span class="nc" id="L120">                        mUserIdView.requestFocus();</span>
+<span class="nc" id="L121">                        Toast.makeText(getApplicationContext(),</span>
+<span class="nc" id="L122">                                R.string.login_failed, Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L123">                        return;</span>
+                    }
+<span class="fc" id="L125">                } catch (Exception e){</span>
+<span class="fc" id="L126">                    return;</span>
+<span class="fc" id="L127">                }</span>
+                //put extras for main activity and start it
+<span class="fc" id="L129">                mainActivityIntent.putExtra(&quot;userID&quot;, enteredID);</span>
+<span class="fc" id="L130">                mainActivityIntent.putExtra(&quot;role&quot;, spinner.getSelectedItem().toString());</span>
+<span class="fc" id="L131">                mainActivityIntent.putExtra(&quot;userFullName&quot;, userFullName);</span>
+<span class="fc" id="L132">                startActivity(mainActivityIntent);</span>
+                //hide keyboard
+<span class="fc" id="L134">                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);</span>
+<span class="fc" id="L135">                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);</span>
+<span class="fc" id="L136">                progressBar.setVisibility(View.VISIBLE);</span>
+<span class="fc" id="L137">                db.close();</span>
+<span class="fc" id="L138">                finish();</span>
+<span class="fc" id="L139">            }</span>
+        });
+<span class="fc" id="L141">    }</span>
+
+
+    /*
+     * Attempts to sign in or register the account specified by the login form.
+     * If there are form errors (invalid mUserIdView, missing fields, etc.), the
+     * errors are presented and no actual login attempt is made.
+     */
+    private void attemptLogin() {
+
+        // Reset errors.
+<span class="fc" id="L152">        mUserIdView.setError(null);</span>
+<span class="fc" id="L153">        mPasswordView.setError(null);</span>
+
+<span class="fc" id="L155">        boolean cancel = false;</span>
+<span class="fc" id="L156">        View focusView = mUserIdView;</span>
+
+        // Check if the user entered a password.
+<span class="fc bfc" id="L159" title="All 2 branches covered.">        if (enteredPassword.isEmpty()) {</span>
+<span class="fc" id="L160">            mPasswordView.setError(getString(R.string.error_field_required));</span>
+<span class="fc" id="L161">            focusView = mPasswordView;</span>
+<span class="fc" id="L162">            cancel = true;</span>
+        }
+
+        // Check if the user entered an ID.
+<span class="fc bfc" id="L166" title="All 2 branches covered.">        if (mUserIdView.getText().toString().isEmpty()) {</span>
+<span class="fc" id="L167">            mUserIdView.setError(getString(R.string.error_field_required));</span>
+<span class="fc" id="L168">            focusView = mUserIdView;</span>
+<span class="fc" id="L169">            cancel = true;</span>
+        }
+
+<span class="fc bfc" id="L172" title="All 2 branches covered.">        if (cancel) {</span>
+            // There was an error; don't attempt login and focus the first
+            // form field with an error.
+<span class="fc" id="L175">            focusView.requestFocus();</span>
+        } else {
+            // kick off a background task to perform the user login attempt.
+<span class="fc" id="L178">            mAuthTask = new UserLoginTask();</span>
+<span class="fc" id="L179">            mAuthTask.execute((Void) null);</span>
+        }
+<span class="fc" id="L181">    }</span>
+
+    /**
+     * method check if the user id is in the database
+     * @param id
+     * @return
+     */
+    private boolean isUserIDValid(int id) {
+<span class="fc" id="L189">        String[] options = getResources().getStringArray(R.array.user_role_selection);</span>
+<span class="fc" id="L190">        String selected = String.valueOf(spinner.getSelectedItem());</span>
+        //selected equals &quot;Versicherungsnehmer&quot;
+<span class="fc bfc" id="L192" title="All 2 branches covered.">        if (selected.equals(options[0])){</span>
+            try {
+<span class="fc" id="L194">                db.getBenutzerById(enteredID);</span>
+<span class="nc" id="L195">            } catch (Exception e){</span>
+<span class="nc" id="L196">                return false;</span>
+<span class="fc" id="L197">            }</span>
+<span class="fc" id="L198">            return true;</span>
+
+        }else{
+            try {
+<span class="fc" id="L202">                db.getGutachterById(enteredID);</span>
+<span class="nc" id="L203">            } catch (Exception e){</span>
+<span class="nc" id="L204">                return false;</span>
+<span class="fc" id="L205">            }</span>
+<span class="fc" id="L206">            return true;</span>
+        }
+    }
+
+    /*
+     * Represents an asynchronous login/registration task used to authenticate
+     * the user.
+     */
+<span class="fc" id="L214">    public class UserLoginTask extends AsyncTask&lt;Void, Void, Boolean&gt; {</span>
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+
+<span class="fc" id="L219">            Boolean isGutachter = selectedRole.equals(getResources().getStringArray(R.array.user_role_selection)[1]);</span>
+            Person p;
+
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">            if (!isUserIDValid(enteredID)){</span>
+<span class="nc" id="L223">                return false;</span>
+            }
+
+<span class="fc bfc" id="L226" title="All 2 branches covered.">            if (!isGutachter) {</span>
+<span class="fc" id="L227">                p = db.getBenutzerById(enteredID);</span>
+            } else {
+<span class="fc" id="L229">                p = db.getGutachterById(enteredID);</span>
+            }
+<span class="fc" id="L231">            userFullName = p.getFullName();</span>
+<span class="fc" id="L232">            return p.getPasswort().equals(enteredPassword);</span>
+        }
+
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span>Generated by the Android Gradle plugin 2.3.3</div></body></html>

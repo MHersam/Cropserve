@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: com.android.support.test.espresso:espresso-idling-resource-3.0.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.android/build-cache/9dfd619778d1bd46f1f51612749f6aa88a60d67c/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/9dfd619778d1bd46f1f51612749f6aa88a60d67c/output/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

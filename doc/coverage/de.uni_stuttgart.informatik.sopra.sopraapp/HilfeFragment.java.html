@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>HilfeFragment.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debugAndroidTest</a> &gt; <a href="index.source.html" class="el_package">de.uni_stuttgart.informatik.sopra.sopraapp</a> &gt; <span class="el_source">HilfeFragment.java</span></div><h1>HilfeFragment.java</h1><pre class="source lang-java linenums">package de.uni_stuttgart.informatik.sopra.sopraapp;
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
+import static de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity.polygons;
+
+
+/**
+ * Class that indicates a plan how to use the app
+ *
+ * @author Patrick Koss
+ * @author Sarah Gutierrez Muñoz
+ * @author Michael Hersam
+ */
+public class HilfeFragment extends Fragment {
+
+    /**
+     * construcktor
+     */
+<span class="fc" id="L30">    public HilfeFragment() {</span>
+        // Required empty public constructor
+<span class="fc" id="L32">    }</span>
+
+    /**
+     * method is called when the fragment is created
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+<span class="fc" id="L45">        return inflater.inflate(R.layout.fragment_hilfe, container, false);</span>
+    }
+
+    /**
+     * method that initialize the fragment
+     * @param view
+     * @param savedInstanceState
+     */
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+<span class="fc" id="L55">        super.onViewCreated(view, savedInstanceState);</span>
+        //blank page
+<span class="fc" id="L57">        TextView view1 = getActivity().findViewById(R.id.view_help);</span>
+<span class="fc" id="L58">        view1.setBackgroundColor(Color.WHITE);</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        for(int i=0;i&lt;polygons.size();i++){</span>
+<span class="fc" id="L60">            polygons.get(i).setClickable(false);</span>
+        }
+        //listview for adding the helping info
+<span class="fc" id="L63">        ListView list = (ListView) getActivity().findViewById(R.id.listviewHelp);</span>
+<span class="fc" id="L64">        String[] items = {getString(R.string.help_Start), getString(R.string.help_Menü), getString(R.string.help_Feldererfassen), getString(R.string.help_Feldereditieren), getString(R.string.help_Felderlöschen), getString(R.string.help_Feldersubmenü), getString(R.string.help_Schadenerfassen), getString(R.string.help_Schadeneditieren), getString(R.string.help_Schadenlöschen), getString(R.string.help_Verträgeansicht), getString(R.string.help_Accountansicht), getString(R.string.help_AppInfo), getString(R.string.help_Logout)};</span>
+        //setting the size for each item to 1200px
+<span class="fc" id="L66">        ArrayAdapter&lt;String&gt; adapter = new ArrayAdapter&lt;String&gt;(getActivity().getApplicationContext(),</span>
+<span class="fc" id="L67">                android.R.layout.simple_expandable_list_item_1, items){</span>
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent){
+                // Get the current item from ListView
+<span class="fc" id="L71">                View view = super.getView(position,convertView,parent);</span>
+
+                // Get the Layout Parameters for ListView Current Item View
+<span class="fc" id="L74">                ViewGroup.LayoutParams params = view.getLayoutParams();</span>
+
+                // Set the height of the Item View
+<span class="fc" id="L77">                params.height = 1200;</span>
+<span class="fc" id="L78">                view.setLayoutParams(params);</span>
+
+<span class="fc" id="L80">                return view;</span>
+            }
+        };
+
+<span class="fc" id="L84">        list.setAdapter(adapter);</span>
+        /*ScrollView scrollView = (ScrollView)getActivity().findViewById(R.id.scroll);
+        TextView tv1 = new TextView(getActivity());
+        tv1.setText(&quot;Start: \n&quot;+ getString(R.string.help_Start)+&quot;\n&quot;);
+        scrollView.addView(tv1);*/
+        /*view1.setText(&quot;Start: \n&quot;+ getString(R.string.help_Start)+&quot;\n&quot;);
+        view1.setText(view1.getText()+&quot;Menü: \n&quot;+getString(R.string.help_Menü)+&quot;\n&quot;);
+        view1.setText(view1.getText()+&quot;Feld: \n&quot;+getString(R.string.help_Feldererfassen)+&quot;\n&quot;);
+        view1.setText(view1.getText()+getString(R.string.help_Feldereditieren)+&quot;\n&quot;);
+        view1.setText(view1.getText()+getString(R.string.help_Felderlöschen)+&quot;\n&quot;);
+        view1.setText(view1.getText()+getString(R.string.help_Feldersubmenü)+&quot;\n&quot;);
+        view1.setText(view1.getText()+&quot;Schadensfall: \n&quot;+getString(R.string.help_Schadenerfassen)+&quot;\n&quot;);*/
+<span class="fc" id="L96">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span>Generated by the Android Gradle plugin 2.3.3</div></body></html>

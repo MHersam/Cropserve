@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="app_name">Cropserve</string>
+    <string name="add_btn">Info</string>
+    <string name="action_sign_in_short">Password?</string>
+    <string name="action_settings">Settings</string>
+    <string name="dialog_description">Additional Field Information</string>
+    <string name="foto">+ Add Photo</string>
+    <string name="fieldreg_up">Create new field</string>
+    <string name="password_hint">Password</string>
+    <string name="positive_logout_dialog_option">Yes</string>
+    <string name="save_btn">Save</string>
+    <string name="search_hint">Search app ...</string>
+    <string name="search_title">Search</string>
+    <string name="title_activity_login">Welcome</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="userid_hint">Personal User ID</string>
+    <string name="user_role_prompt">Choose account</string>
+    <string name="report_dmg">Report Damage Case</string>
+    <string name="pos_btn">Set marker</string>
+    <string name="negative_logout_dialog_option">No</string>
+    <string name="logout_dialog_title">Log out?</string>
+    <string name="login_failed">The user ID or password you entered are incorrect. Please try again</string>
+    <string name="login">Log in</string>
+    <string name="info_missing3">Missing information</string>
+    <string name="gps_btn">GPS</string>
+    <string name="edit_btn">Info</string>
+    <string name="error_1">Error while generating database table</string>
+    <string name="error_field_required">The highlighted field is missing information or contains an error.</string>
+    <string name="error_invalid_password">Invalid password</string>
+    <string name="error_invalid_userid">Invalid user ID</string>
+    <string name="field_delete">Delete field</string>
+    <string name="marker_missing">Not enough marker to form a cohesive area</string>
+    <string name="no_internet">This application requires an initial internet connection to access and load necessary map components for full map functionality.</string>
+    <string name="info_missing">Please add the required field data.</string>
+    <string name="info_missing2">Please add the required damage data.</string>
+    <string name="dialog_descr_sf">Additional Damage Information</string>
+    <string name="del_feld">Delete Field</string>
+    <string name="del_dmg">Delete Damage Case</string>
+    <string name="coordinate_missing">Damage coordinates do not lie within a registered field.</string>
+    <string name="del_confirm2">Really delete %1$s? This action cannot be undone.</string>
+    <string name="item_acc">Account</string>
+    <string name="item_app">About Cropserve</string>
+    <string name="item_contract">Contracts</string>
+    <string name="item_dmg">Damage Reports</string>
+    <string name="item_feld">Fields</string>
+    <string name="item_help">Help</string>
+    <string name="item_logout">Logout</string>
+    <string name="item_start">Start</string>
+    <string name="button_okay">Okay</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="d_bezirk">County</string>
+    <string name="d_bland">State</string>
+    <string name="d_feld">Type of Field</string>
+    <string name="d_foto">Photo</string>
+    <string name="d_land">Country</string>
+    <string name="d_region">Location</string>
+    <string name="d_stadt">City</string>
+    <string name="d_vertrag">Contract</string>
+    <string name="d_gutachter">Reviewer</string>
+    <string name="d_damage">Type of Damage</string>
+
+
+
+
+    /*Feld-Info Vertrag-Array*/
+    <string-array name="feld_verträge">
+        <item>Liability Insurance</item>
+        <item>Storm Damage</item>
+        <item>Forces of Nature</item>
+        <item>Frost Damage</item>
+        <item>Pest Infestation</item>
+        <item>Game Damage</item>
+        <item>Criminal Damage</item>
+    </string-array>
+
+    /*types of Schadensfälle*/
+    <string-array name="schadens_arten">
+        <item>Earthquake</item>
+        <item>Hailstorm</item>
+        <item>Game Damage</item>
+        <item>Flooding</item>
+        <item>Drought</item>
+        <item>Avalanche</item>
+        <item>Damage by people</item>
+    </string-array>
+
+    /*Feld-Info Art-Array*/
+    <string-array name="feld_arten">
+        <item>Wheat</item>
+        <item>Rye</item>
+        <item>Barley</item>
+        <item>Potatoes</item>
+        <item>Winter Oilseed Rape</item>
+        <item>Corn</item>
+        <item>Horticultural Products</item>
+        <item>Disused Field</item>
+    </string-array>
+
+    /*user role selection*/
+    <string-array name="user_role_selection">
+        <item>Insurance holder</item>
+        <item>Reviewer</item>
+    </string-array>
+
+
+    <string name="del_confirm1">Delete %1$s?</string>
+    <string name="button_no">No</string>
+    <string name="button_del">Delete</string>
+    <string name="button_yes">Yes</string>
+    <string name="l_art">Type: </string>
+    <string name="l_fläche">Area: </string>
+    <string name="l_land">Country: </string>
+    <string name="l_stadt">City: </string>
+    <string name="l_vertrag">Contract: </string>
+    <string name="l_landkreis">County: </string>
+    <string name="l_maß">ha</string>
+    <string name="list_data_header">Contracted Field: ID#</string>
+    <string name="l_bland">State: </string>
+    <string name="feldOhneVertrag">Field without contract: ID#</string>
+    <string name="l_s_art">Type of Damage:</string>
+    <string name="l_s_date">Date: </string>
+    <string name="l_s_feld">Field:</string>
+    <string name="l_s_loc">Location: </string>
+    <string name="l_s_rev">Reviewer:</string>
+    <string name="l_s_status">Status: </string>
+    <string name="l_s_area">Area: </string>
+    <string name="s_list_data_header">Damage Case: ID#</string>
+    <string name="button_new_field">New Field</string>
+    <string name="search_feld">Field</string>
+    <string name="search_resultno">No search results...</string>
+    <string name="search_vertrag">Contract</string>
+    <string name="dmg_status">reported</string>
+    <string name="my_fields">My fields</string>
+    <string name="delete_toast">%1$s was deleted.</string>
+    <string name="s_fall">Damage Case</string>
+    <string name="s_schaden">Damage</string>
+    <string name="sr_feld">Field: #</string>
+    <string name="sr_schaden">Damage Case: #</string>
+    <string name="contract_fields">Fields that are insured by this contract:</string>
+    <string name="contract_header">Contract Information: %1$s</string>
+    <string name="no_fields">No fields covered by this contract.</string>
+    <string name="chosen_user">User:</string>
+    <string name="d_vnehmer">Insurance holder</string>
+
+
+    <string name="contract1">Common risk factors that occur while operating your business are covered by liability insurances. These include but are not limited to: \n
+        - private liability \n
+        - agricultural construction \n
+        - trading of agricultural produce \n
+        - loss of proceeds \n
+        For a fully detailed list of risk protections available to you, please visit our website or contact your responsible official.
+    </string>
+    <string name="contract2">Storm damage can decimate a farmer\'s crop with little to no warning.\nThis insurance will cover the most common types of storm damage, including hail storms, flooding, landslides or heavy rain.\nResulting damages are advised to be documented quickly.</string>
+
+    /*account related strings*/
+    <string name="adress">Address:</string>
+    <string name="allfield_area">Total Field Area: %1$s ha</string>
+    <string name="change_password_button_text">Change my password</string>
+    <string name="id">User-ID:</string>
+    <string name="role">Role:</string>
+    <string name="personal_data">Personal data</string>
+    <string name="ok">OK</string>
+    <string name="num_fields">Number of Fields: %1$d\n</string>
+    <string name="name">Name:</string>
+    <string name="hint">Hint</string>
+    <string name="hint_message_text">If your actual information differ from what is displayed here, please contact your responsible insurance official.</string>
+    <string name="acc_field">Field data:\n</string>
+    <string name="no_picture">No picture taken.</string>
+    <string name="no_permission">No permission to use camera</string>
+    <string name="no_file">Error while creating photo file</string>
+    <string name="help_Accountansicht">Account and Personal Data:\n\nGeneral information about  your personal data and your fields are displayed under Account. There is also an option available to change your password.</string>
+    <string name="help_AppInfo">About the App and Language:\n\n\'About SoPraApp\' displays information about the current name and version of this app alongside an option to switch languages; you can choose between English and German.</string>
+    <string name="help_Start">Map and Fields:\n\nUnder \'Start\' you can view the map with registered fields colored in blue and reported damage cases on fields in red.</string>
+    <string name="help_Schadenlöschen">Deleting a Damage Case:\n\nTo delete a damage case, go to \'Damage Reports\' and click and hold the desired damage case. The case and included information will be deleted upon confirming the deletion twice.</string>
+    <string name="help_Logout">Logout from your Account:\n\nIf you want to logout of your user account, go to \'Logout\' in the side bar menu to safely leave the app and return to the starting screen.</string>
+    <string name="help_Menü">Using the Menu:\n\nThe menu for this app can be opened by clicking the symbol in the upper left-hand corner of your screen or by simply dragging a finger from the left screen edge inwards. By clicking a listing point in the menu, you can access all different parts of functions this app has to offer.</string>
+    <string name="help_Felderlöschen">Deleting a Field:\n\nTo delete a field with its associated information, click and hold that field in the displayed list. You will be asked to confirm the deletion twice to avoid accidental loss of data.</string>
+    <string name="help_Feldersubmenü">Detailed Field Information:\n\nTo view a fields detailed information, simply click on the desired field in \'Fields\' and the information will fold out.</string>
+    <string name="help_Schadeneditieren">Viewing and Editing a Damage Case:\n\nTo edit and review an existing damage report, click on the desired case. A map will open to display the damage case area and above will be a list holding all relevant information, including a symbol to look at the photo taken for this damage case.\nEditing the case starts with tapping the pencil symbol which will open a dialogue window to fill up with the necessary information. Changes are saved by clicking \'OK\' in the dialogue window.</string>
+    <string name="confirm_new_password">Confirm new password</string>
+    <string name="current_password">Current password</string>
+    <string name="wrong_password">Incorrect password</string>
+    <string name="new_password">New password</string>
+    <string name="lang_C_De">You have selected German. App was closed. Please restart the app.</string>
+    <string name="lang_C_En">You have selected English. App was closed. Please restart the app.</string>
+    <string name="password_change_successful">Your password has been successfully changed.</string>
+    <string name="password_min_length">Password must be at least 4 characters.</string>
+    <string name="passwords_unequal">Passwords do not match.</string>
+    <string name="permissions_info">Permissions</string>
+    <string name="permissions_Detail">Camera and Location</string>
+    <string name="spinner_lang">Select language...</string>
+    <string name="language_text">Language</string>
+    <string name="lang_de">German</string>
+    <string name="lang_en">English</string>
+    <string name="help_Feldereditieren">Editing a Field:\n\nUnder \'Fields\' you can edit a field by clicking on the pencil symbol next to it. A map will open where the corners of the field are marked with position markers. To move a marker, click and hold it; to remove a marker, tap it once. The \'Info\' button opens a dialogue window where all necessary information are to be filled in.</string>
+    <string name="help_Schadenerfassen">Reporting a Damage Case:\n\nUnder \'Damage Reports\' a user can report damages done to their fields by clicking on \'Report Damage Case\'. A map will open where a user is required to draw the damage case area on an already existing field. To set the damage area, use \'Set Marker\' to mark the corners whereas the markers are set at the position of the hairline cross.\nThe damage will be attributed to the field it lies in, so it is absolutely <i>required</i> that all corners/markers are within a field.
+After completing drawing the damage area, clicking on Info will lead to a dialogue window where the necessary information must be filled out. To return to the map and confirm the information, click OK; to finalize the process of reporting the damage case, click \'Save\' to be safely returned to Damage Reports.</string>
+    <string name="help_Verträgeansicht">Looking up Contracts:\n\nUnder \'Contracts\', the user can review all available insurance contracts and view detailed information about them. Included are also the fields that are currently insured by that contract.</string>
+    <string name="help_Feldererfassen">Registering a Field:\n\nRegistering a new field is done with the button \'New Field\'. A map view will open. To locate your current position, click on \'GPS\'. Markers for the field corners are set in the middle of the screen (the hairline cross) by tapping \'Set Marker\'. Clicking and holding the marker will lift it up and allows it to be relocated.\nTo remove the marker, click it once. After completing drawing the field, all users are required to fill in additional information by clicking on \'Info\' and filling in the form. Click \'OK\' to go back and \'Save\' to save your progress and return to \'Fields\'.</string>
+    <string name="search_resultC">%1$s can be found under \'Contracts\'.</string>
+    <string name="search_resultF">%1$s can be found under \'Fields\'.</string>
+    <string name="search_resultS">%1$s can be found under \'Damage Reports\'.</string>
+    <string name="search_resultDefault">No further information available right now.</string>
+    <string name="contract3">Forces of nature are unpredictable and often bring about devastating damage to your fields and crop. Costs for loss of crop and any other form of damage dealt are tremendous. This contract offers cost coverage for a  wide array of natural damages and a relief program to help coordinate harvest and payments within budget to support insurance holders.</string>
+    <string name="contract4">Despite good preparation for cold winter days, frost damage still comes unexpected and when the crop needs it the least; the damaged crop is unusable and results in a huge loss. This insurances helps covering the costs for the resulting broken water pipes and damaged crop.</string>
+    <string name="contract6">Game damage is often difficult to pursue and farmers can only sit on the costs. This insurance covers these kind of damage cases, whether it be on buildings or directly on owned fields and crops, and is accompanied by an appropriate contact to your insurance to help coordinate and document the damage.</string>
+    <string name="contract5">Termites, wasps or even ants are a potential but very real threat for any crop or harvest and result in reduced revenue and overall yield. In spite of taking precaution against pest infestations, it can happen and this insurance covers those types of damage. It includes consulting on site and offers guideline for assessing and reducing the damage done.</string>
+    <string name="contain_dialog_create">create</string>
+    <string name="contain_dialog_delete">delete</string>
+    <string name="create_user">Create User</string>
+    <string name="l_s_person">Insurance Holder:</string>
+    <string name="selection_cont">Continue</string>
+    <string name="delete_user">Delete User</string>
+    <string name="new_user">Create a User Account</string>
+    <string name="new_user_button">Create User</string>
+    <string name="new_user_name">First Name</string>
+    <string name="new_user_pw">Password</string>
+    <string name="new_user_pw_rp">Confirm Password</string>
+    <string name="new_user_sName">Last Name</string>
+    <string name="new_user_address">Address</string>
+    <string name="match_user">User already exists</string>
+    <string name="no_match_pw">Passwords do not match.</string>
+    <string name="required_form">Please fill in all fields.</string>
+    <string name="success_createUser">User was successfully created.</string>
+    <string name="user_list">List of Insurance Holders</string>
+    <string name="num_damages">Number of Damage Cases: %1$d</string>
+    <string name="search_resultContract">This contract can be found under \'Contracts\'.</string>
+    <string name="contract7">"Discovering criminal damage is infuriating and almost always leaves the owner of destroyed or damaged property with the inability to prosecute the offenders. This insurance offers protection against vandalism by a third party and resulting damages and also helps with expenses for taking corresponding legal actions."</string>
+    <string name="help_Creation">Creating a User:\n\nOnly as a reviewer, you have the ability to create a new account for an insurance holder. Under \'Account\', click on \'Create User\' and fill in the form with the necessary information. After filling in the form, clicking on the button \'Create User\' will successfully create a new user.</string>
+    <string name="delete_user_d1">Do you want to remove %1$s from the database?</string>
+    <string name="delete_user_dConfirm">"Do you really want to delete %1$s? This action is irreversible and deletes all associated fields and damage reports. "</string>
+    <string name="help_Deletion">"Deleting a User:\n\nAs a reviewer, you have the ability to delete an existing insurance holder account from the app. To delete a user, either click on 'Delete User' or go straight to \"List of Insurance Holders\". There you are presented with a list of all existing insurance holders. Click and hold one of the displayed names to open a dialog window. You are required to confirm the deletion twice for security reasons before it will actually happen. After confirming the deletion, which will subsequently remove the user's fields and damage reports, please leave the list view to properly update the display data. Afterwards all traces of the user should be gone. "</string>
+
+
+</resources>

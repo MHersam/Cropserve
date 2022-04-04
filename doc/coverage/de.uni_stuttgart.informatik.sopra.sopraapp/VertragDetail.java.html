@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>VertragDetail.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debugAndroidTest</a> &gt; <a href="index.source.html" class="el_package">de.uni_stuttgart.informatik.sopra.sopraapp</a> &gt; <span class="el_source">VertragDetail.java</span></div><h1>VertragDetail.java</h1><pre class="source lang-java linenums">package de.uni_stuttgart.informatik.sopra.sopraapp;
+
+import android.content.res.Resources;
+import android.support.v4.app.Fragment;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+
+import static de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity.polygons;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity.userId;
+
+
+/**
+ * Class that capsules attributes for a damage case
+ *
+ * @author Patrick Koss
+ * @author Sarah Gutierrez Muñoz
+ * @author Michael Hersam
+ */
+public class VertragDetail extends Fragment {
+
+    ArrayList&lt;String&gt; fieldList;
+
+
+    /**
+     * constructor
+     */
+<span class="fc" id="L37">    public VertragDetail() {</span>
+        // Required empty public constructor
+<span class="fc" id="L39">    }</span>
+
+    /**
+     * method is called when fragment is created
+     *
+     * @param savedInstanceState
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L48">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L49">    }</span>
+
+    /**
+     * method is called when fragment is created
+     *
+     * @param inflater inflates the layout
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">        if (container != null) {</span>
+<span class="fc" id="L63">            container.removeAllViews();</span>
+        }
+        // Inflate the layout for this fragment
+<span class="fc" id="L66">        return inflater.inflate(R.layout.contract_detail, container, false);</span>
+    }
+
+
+    /**
+     * method is initialising the fragment
+     * @param view
+     * @param savedInstanceState
+     */
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+<span class="fc" id="L77">        super.onViewCreated(view, savedInstanceState);</span>
+
+        //background
+<span class="fc" id="L80">        TextView background = getActivity().findViewById(R.id.tvBG);</span>
+<span class="fc" id="L81">        background.setBackgroundColor(Color.WHITE);</span>
+
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        for(int i=0;i&lt;polygons.size();i++){</span>
+<span class="fc" id="L84">            polygons.get(i).setClickable(false);</span>
+        }
+
+        //header text
+<span class="fc" id="L88">        TextView coDescrHeader = getActivity().findViewById(R.id.coDescrHeader);</span>
+<span class="fc" id="L89">        final Resources res = getResources();</span>
+<span class="fc" id="L90">        String text = res.getString(R.string.contract_header, VertragFragment.itemID);</span>
+<span class="fc" id="L91">        coDescrHeader.setText(text);</span>
+
+        //description text
+<span class="fc" id="L94">        TextView coDescription = getActivity().findViewById(R.id.coDescr);</span>
+
+        //selected item from VertragFragment
+<span class="fc" id="L97">        String clickedItem = VertragFragment.itemID;</span>
+
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        if (clickedItem.equalsIgnoreCase(getResources().getStringArray(R.array.feld_verträge)[0])) {</span>
+<span class="fc" id="L100">            coDescription.setText(R.string.contract1);</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        } else if (clickedItem.equalsIgnoreCase(getResources().getStringArray(R.array.feld_verträge)[1])) {</span>
+<span class="fc" id="L102">            coDescription.setText(R.string.contract2);</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        } else if (clickedItem.equalsIgnoreCase(getResources().getStringArray(R.array.feld_verträge)[2])) {</span>
+<span class="fc" id="L104">            coDescription.setText(R.string.contract3);</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">        } else if (clickedItem.equalsIgnoreCase(getResources().getStringArray(R.array.feld_verträge)[3])) {</span>
+<span class="nc" id="L106">            coDescription.setText(R.string.contract4);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        } else if (clickedItem.equalsIgnoreCase(getResources().getStringArray(R.array.feld_verträge)[4])) {</span>
+<span class="fc" id="L108">            coDescription.setText(R.string.contract5);</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        } else if (clickedItem.equalsIgnoreCase(getResources().getStringArray(R.array.feld_verträge)[5])) {</span>
+<span class="fc" id="L110">            coDescription.setText(R.string.contract6);</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">        } else if (clickedItem.equalsIgnoreCase(getResources().getStringArray(R.array.feld_verträge)[6])) {</span>
+<span class="fc" id="L112">            coDescription.setText(R.string.contract7);</span>
+        }
+
+
+        //list that hold all dmg cases
+<span class="fc" id="L117">        final ListView list = getActivity().findViewById(R.id.coFields);</span>
+
+
+        //prepare list data
+<span class="fc" id="L121">        getFieldListItems();</span>
+
+        /*
+         * fill list and set view
+         * list_item_dmg must be an empty text view!
+         */
+<span class="fc" id="L127">        ArrayAdapter&lt;String&gt; dmgAdapter = new ArrayAdapter&lt;String&gt;(getContext(), R.layout.list_item_dmg_attribute, fieldList);</span>
+<span class="fc" id="L128">        list.setAdapter(dmgAdapter);</span>
+<span class="fc" id="L129">    }</span>
+
+
+
+
+    /**
+     * pulls data from database to fill ListView with every Schadensfall existing
+     *
+     */
+    public void getFieldListItems() {
+<span class="fc" id="L139">        fieldList = new ArrayList&lt;String&gt;();</span>
+
+<span class="fc" id="L141">        ArrayList&lt;Integer&gt; fields = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L142">        DatenbankDaten pullFields = new DatenbankDaten(getActivity().getApplicationContext());</span>
+<span class="fc" id="L143">        pullFields.open();</span>
+
+        //get all existing IDs
+<span class="fc bfc" id="L146" title="All 2 branches covered.">        for (Feld feld : pullFields.getFeld()) {</span>
+            //check if there are fields with that insurance type
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">            if(feld.getVertrag().getArt().equalsIgnoreCase(VertragFragment.itemID)) {</span>
+<span class="nc" id="L149">                Log.i(&quot;hello&quot;, &quot;here&quot;);</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">                if (userId &gt;= 0) {</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">                    if (userId == feld.getVertrag().getPerson().getId()) {</span>
+<span class="nc" id="L152">                        Log.i(&quot;hello&quot;, &quot;here-why&quot;);</span>
+<span class="nc" id="L153">                        fields.add(feld.getId());</span>
+                    }
+                } else {
+<span class="nc" id="L156">                    Log.i(&quot;hello&quot;, &quot;here-why2&quot;);</span>
+<span class="nc" id="L157">                    fields.add(feld.getId());</span>
+                }
+            }
+        }
+
+<span class="pc bpc" id="L162" title="2 of 4 branches missed.">        if(fields.isEmpty() &amp;&amp; fieldList.isEmpty()) {</span>
+<span class="fc" id="L163">            Log.i(&quot;hello&quot;,&quot;here3&quot;);</span>
+<span class="fc" id="L164">            fieldList.add(getString(R.string.no_fields));</span>
+        }
+
+
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">        for (int i = 0; i &lt; fields.size(); i++) {</span>
+            //if(!fieldList.isEmpty()) {
+<span class="nc" id="L170">                fieldList.add(getString(R.string.list_data_header) + fields.get(i).toString());</span>
+            //}
+        }
+<span class="fc" id="L173">        pullFields.close();</span>
+
+<span class="fc" id="L175">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span>Generated by the Android Gradle plugin 2.3.3</div></body></html>

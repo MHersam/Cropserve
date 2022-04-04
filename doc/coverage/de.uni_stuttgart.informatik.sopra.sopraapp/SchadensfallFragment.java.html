@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SchadensfallFragment.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debugAndroidTest</a> &gt; <a href="index.source.html" class="el_package">de.uni_stuttgart.informatik.sopra.sopraapp</a> &gt; <span class="el_source">SchadensfallFragment.java</span></div><h1>SchadensfallFragment.java</h1><pre class="source lang-java linenums">package de.uni_stuttgart.informatik.sopra.sopraapp;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
+
+import static de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity.drawPolygons;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity.location;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity.mMap;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity.polygons;
+import static de.uni_stuttgart.informatik.sopra.sopraapp.MainActivity.userId;
+
+
+/**
+ * Class that capsules attributes for a damage case
+ *
+ * @author Patrick Koss
+ * @author Sarah Gutierrez Muñoz
+ * @author Michael Hersam
+ */
+public class SchadensfallFragment extends Fragment {
+
+    private static String itemID;
+    ArrayList&lt;String&gt; reportList;
+<span class="fc" id="L46">    public static int schadenID = -1;</span>
+
+    //constructor
+<span class="fc" id="L49">    public SchadensfallFragment() {</span>
+        // Required empty public constructor
+<span class="fc" id="L51">    }</span>
+
+
+    /**
+     * Called when the activity is first created.
+     */
+    public void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L58">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L59">    }</span>
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+<span class="fc" id="L65">        return inflater.inflate(R.layout.fragment_schadensfall, container, false);</span>
+    }
+
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+<span class="fc" id="L71">        super.onViewCreated(view, savedInstanceState);</span>
+
+        //schadenID=-1;
+<span class="fc" id="L74">        ListItemDetail.marker.removeAll(ListItemDetail.marker);</span>
+<span class="fc" id="L75">        SchadenErfassen.marker.removeAll(SchadenErfassen.marker);</span>
+<span class="fc" id="L76">        drawPolygons(getActivity().getApplicationContext());</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        for(int i=0;i&lt;polygons.size();i++){</span>
+<span class="fc" id="L78">            polygons.get(i).setClickable(false);</span>
+        }
+
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        if(MainActivity.location.getVisibility() == View.VISIBLE) {</span>
+<span class="fc" id="L82">            location.setVisibility(View.INVISIBLE);</span>
+        }
+
+        //background view
+<span class="fc" id="L86">        TextView bgView = getActivity().findViewById(R.id.damage_view);</span>
+<span class="fc" id="L87">        bgView.setBackgroundColor(Color.WHITE);</span>
+
+        //list that hold all dmg cases
+<span class="fc" id="L90">        final ListView dmgCases_list = getActivity().findViewById(R.id.listView1);</span>
+<span class="fc" id="L91">        Button report_btn = getActivity().findViewById(R.id.dmg_rep_btn);</span>
+
+        //prepare list data
+<span class="fc" id="L94">        getDmgListItems();</span>
+
+
+        /*
+         * fill list and set view
+         * list_item_dmg must be an empty text view!
+         */
+<span class="fc" id="L101">        ArrayAdapter&lt;String&gt; dmgAdapter = new ArrayAdapter&lt;String&gt;(getContext(), R.layout.list_item_dmg, reportList);</span>
+<span class="fc" id="L102">        dmgCases_list.setAdapter(dmgAdapter);</span>
+
+        //listener for list items, switch view to show Details (ListItemDetail)
+<span class="fc" id="L105">        dmgCases_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {</span>
+            @Override
+            public void onItemClick(AdapterView&lt;?&gt; adapterView, View view, int i, long l) {
+                //get selected item
+<span class="fc" id="L109">                itemID = adapterView.getItemAtPosition(i).toString();</span>
+                //schadenID = Integer.parseInt(reportList.get(Integer.parseInt(itemID.split(&quot;#&quot;)[1])));
+<span class="fc" id="L111">                String itemIDMash = getItemID();</span>
+<span class="fc" id="L112">                String str = itemIDMash.replaceAll(&quot;[^-?0-9]+&quot;, &quot; &quot;).trim();</span>
+<span class="fc" id="L113">                schadenID = Integer.parseInt(str);</span>
+<span class="fc" id="L114">                DatenbankDaten db = new DatenbankDaten(getActivity().getApplicationContext());</span>
+<span class="fc" id="L115">                db.open();</span>
+<span class="fc" id="L116">                Schadensfall schadensfall = db.getSchadensfallById(schadenID);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">                for (int j = 0; j &lt; schadensfall.getSchadensposition().length - 1; j++) {</span>
+<span class="fc" id="L118">                    ListItemDetail.marker.add(mMap.addMarker(new MarkerOptions()</span>
+<span class="fc" id="L119">                            .position(new LatLng(schadensfall.getSchadensposition()[j].latitude, schadensfall.getSchadensposition()[j].longitude))</span>
+<span class="fc" id="L120">                            .title(String.valueOf(EditFeld.marker.size() + 1))</span>
+<span class="fc" id="L121">                            .draggable(true)));</span>
+                }
+<span class="fc" id="L123">                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(schadensfall.getSchadensposition()[0].latitude, schadensfall.getSchadensposition()[0].longitude), 15));</span>
+<span class="fc" id="L124">                db.close();</span>
+                //switch to ListItemDetail view
+<span class="fc" id="L126">                FragmentManager fm = getActivity().getSupportFragmentManager();</span>
+<span class="fc" id="L127">                ListItemDetail listNam = new ListItemDetail();</span>
+<span class="fc" id="L128">                FragmentTransaction ft = fm.beginTransaction();</span>
+<span class="fc" id="L129">                ft.replace(R.id.flContent, listNam).addToBackStack(&quot;tag&quot;).commit();</span>
+<span class="fc" id="L130">            }</span>
+        });
+
+        /*Delete option for list items on long click*/
+<span class="fc" id="L134">        dmgCases_list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {</span>
+            @Override
+            public boolean onItemLongClick(AdapterView&lt;?&gt; adapterView, View view, int i, long l) {
+<span class="fc" id="L137">                final String clickedItem = adapterView.getItemAtPosition(i).toString();</span>
+<span class="fc" id="L138">                AlertDialog.Builder alertDel = new AlertDialog.Builder(getActivity());</span>
+<span class="fc" id="L139">                alertDel.setTitle(getString(R.string.del_dmg));</span>
+                //set dynamic dialog message for multi lang support
+<span class="fc" id="L141">                final Resources res = getResources();</span>
+<span class="fc" id="L142">                String text = res.getString(R.string.del_confirm1, clickedItem);</span>
+<span class="fc" id="L143">                alertDel.setMessage(text);</span>
+                //cancel deleting
+<span class="fc" id="L145">                alertDel.setNegativeButton(R.string.button_no, new DialogInterface.OnClickListener() {</span>
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int btn) {
+<span class="fc" id="L148">                        getActivity().getFragmentManager().popBackStack(); //go back</span>
+<span class="fc" id="L149">                    }</span>
+                });
+                //on the way to delete case
+<span class="fc" id="L152">                alertDel.setPositiveButton(R.string.button_yes, new DialogInterface.OnClickListener() {</span>
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int btn2) {
+<span class="fc" id="L155">                        AlertDialog.Builder alertAssure = new AlertDialog.Builder(getActivity());</span>
+<span class="fc" id="L156">                        alertAssure.setTitle(getString(R.string.del_dmg));</span>
+<span class="fc" id="L157">                        String text2 = res.getString(R.string.del_confirm2, clickedItem);</span>
+<span class="fc" id="L158">                        alertAssure.setMessage(text2);</span>
+                        /*ask for confirmation*/
+                        //no, abort
+<span class="fc" id="L161">                        alertAssure.setNegativeButton(R.string.button_no, new DialogInterface.OnClickListener() {</span>
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int btn3) {
+<span class="fc" id="L164">                                getActivity().getFragmentManager().popBackStack(); //go back</span>
+<span class="fc" id="L165">                            }</span>
+                        });
+                        //yes, continue
+<span class="fc" id="L168">                        alertAssure.setPositiveButton(R.string.button_del, new DialogInterface.OnClickListener() {</span>
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int btn4) {
+<span class="fc" id="L171">                                String str = clickedItem.replaceAll(&quot;[^-?0-9]+&quot;, &quot; &quot;).trim();</span>
+<span class="fc" id="L172">                                schadenID = Integer.parseInt(str);</span>
+<span class="fc" id="L173">                                DatenbankDaten db = new DatenbankDaten(getActivity().getApplicationContext());</span>
+<span class="fc" id="L174">                                db.open();</span>
+                                /*removing the selected item from database*/
+<span class="fc" id="L176">                                Schadensfall schadensfall = db.getSchadensfallById(schadenID);</span>
+<span class="fc" id="L177">                                db.removeSchadensfall(schadensfall);</span>
+<span class="fc" id="L178">                                schadenID=-1;</span>
+<span class="fc" id="L179">                                reportList.remove(clickedItem);</span>
+<span class="fc" id="L180">                                FragmentManager fm = getActivity().getSupportFragmentManager();</span>
+<span class="fc" id="L181">                                SchadensfallFragment nam = new SchadensfallFragment();</span>
+<span class="fc" id="L182">                                FragmentTransaction ft = fm.beginTransaction();</span>
+<span class="fc" id="L183">                                ft.replace(R.id.flContent, nam).addToBackStack(&quot;feld_tag&quot;).commit();</span>
+                                //display confirmation toast
+<span class="fc" id="L185">                                String textToast = res.getString(R.string.delete_toast, clickedItem);</span>
+<span class="fc" id="L186">                                Toast.makeText(getContext(), textToast, Toast.LENGTH_SHORT).show();</span>
+<span class="fc" id="L187">                            }</span>
+                        });
+                        //show 2nd dialogue
+<span class="fc" id="L190">                        alertAssure.show();</span>
+<span class="fc" id="L191">                    }</span>
+                });
+                //show 1st dialogue
+<span class="fc" id="L194">                alertDel.show();</span>
+<span class="fc" id="L195">                return true;</span>
+            }
+        });
+
+
+        //report dmg cases button listener
+<span class="fc" id="L201">        report_btn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="fc" id="L204">                FragmentManager fm = getActivity().getSupportFragmentManager();</span>
+<span class="fc" id="L205">                SchadenErfassen dmgNam = new SchadenErfassen();</span>
+<span class="fc" id="L206">                FragmentTransaction ft = fm.beginTransaction();</span>
+<span class="fc" id="L207">                ft.replace(R.id.flContent, dmgNam).addToBackStack(&quot;schadensfall_tag&quot;).commit();</span>
+<span class="fc" id="L208">            }</span>
+        });
+
+<span class="fc" id="L211">    }</span>
+
+
+    /**
+     * pulls data from database to fill ListView with every Schadensfall existing
+     *
+     */
+    public void getDmgListItems() {
+<span class="fc" id="L219">        reportList = new ArrayList&lt;String&gt;();</span>
+<span class="fc" id="L220">        Integer myUser = userId;</span>
+
+<span class="fc" id="L222">        ArrayList&lt;Integer&gt; dmgCases = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L223">        DatenbankDaten pullDmgCases = new DatenbankDaten(getActivity().getApplicationContext());</span>
+<span class="fc" id="L224">        pullDmgCases.open();</span>
+
+        //get all existing IDs
+<span class="fc bfc" id="L227" title="All 2 branches covered.">        for (Schadensfall schFall : pullDmgCases.getSchadensfall()) {</span>
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">            if(userId&gt;=0){</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">                if (myUser.equals(schFall.getFeld().getVertrag().getPerson().getId())) {</span>
+<span class="fc" id="L230">                    dmgCases.add(schFall.getId());</span>
+                }
+            }
+            else{
+<span class="nc" id="L234">                dmgCases.add(schFall.getId());</span>
+            }
+        }
+
+<span class="fc bfc" id="L238" title="All 2 branches covered.">        for (int i = 0; i &lt; dmgCases.size(); i++) {</span>
+<span class="fc" id="L239">            reportList.add(getString(R.string.s_list_data_header) + dmgCases.get(i).toString());</span>
+        }
+
+<span class="fc" id="L242">        pullDmgCases.close();</span>
+
+<span class="fc" id="L244">    }</span>
+
+
+    public String getItemID() {
+<span class="fc" id="L248">        return itemID;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span>Generated by the Android Gradle plugin 2.3.3</div></body></html>

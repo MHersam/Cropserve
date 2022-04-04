@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MainActivity.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debugAndroidTest</a> &gt; <a href="index.source.html" class="el_package">de.uni_stuttgart.informatik.sopra.sopraapp</a> &gt; <span class="el_source">MainActivity.java</span></div><h1>MainActivity.java</h1><pre class="source lang-java linenums">package de.uni_stuttgart.informatik.sopra.sopraapp;
+
+import android.Manifest;
+import android.app.SearchManager;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
+import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PolygonOptions;
+
+import java.util.ArrayList;
+
+/**
+ * Class handle the whole app, in this class is a navigation drawer, so you can navigate to all sub menus
+ * also the map will be regulated here. If a submenu want to do operations on the map it will call this activity
+ *
+ * @author Patrick Koss
+ * @author Sarah Gutierrez Muñoz
+ * @author Michael Hersam
+ */
+<span class="fc" id="L54">public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {</span>
+
+    public static ImageButton location;
+    private DrawerLayout mDrawer;
+    private Toolbar toolbar;
+    private NavigationView nvDrawer;
+    public static GoogleMap mMap;
+    ActionBarDrawerToggle drawerToggle;
+    public static int userId;
+    public static Feld[] felder;
+    public static Schadensfall[] schadensfall;
+    double lat;
+    double lng;
+    private TextView navHeaderUserNameText;
+    private TextView navHeaderUserIdText;
+<span class="fc" id="L69">    public static ArrayList&lt;Polygon&gt; polygons = new ArrayList&lt;&gt;();</span>
+
+    /**
+     * this method is called when the activity is created
+     *
+     * @param savedInstanceState
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L78">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L79">        setContentView(R.layout.activity_main);</span>
+<span class="fc" id="L80">        Bundle extras = getIntent().getExtras();</span>
+<span class="fc" id="L81">        userId = extras.getInt(&quot;userID&quot;);</span>
+
+<span class="fc" id="L83">        DatenbankDaten db = new DatenbankDaten(getApplicationContext());</span>
+<span class="fc" id="L84">        db.open();</span>
+
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">        if (db.getFeld().length == 0) {</span>
+<span class="nc" id="L87">            getApplicationContext().deleteDatabase(&quot;Datenbank.db&quot;);</span>
+<span class="nc" id="L88">            db = new DatenbankDaten(getApplicationContext());</span>
+<span class="nc" id="L89">            db.open();</span>
+<span class="nc" id="L90">            db.data();</span>
+        }
+        //user is getting ask if he want to allow the location permission
+<span class="fc" id="L93">        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);</span>
+
+        //checks for first run and gives user a heads up for map usage
+        //checkFirstRun();
+
+        //get screen with and height
+<span class="fc" id="L99">        DisplayMetrics displayMetrics = new DisplayMetrics();</span>
+<span class="fc" id="L100">        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);</span>
+<span class="fc" id="L101">        wm.getDefaultDisplay().getMetrics(displayMetrics);</span>
+<span class="fc" id="L102">        int screenWidth = displayMetrics.widthPixels;</span>
+<span class="fc" id="L103">        int screenHeight = displayMetrics.heightPixels;</span>
+
+<span class="fc" id="L105">        location = findViewById(R.id.imageButton);</span>
+
+
+<span class="fc" id="L108">        location.setX(screenWidth - screenWidth / 7);</span>
+<span class="fc" id="L109">        location.setY(screenHeight - screenHeight / 5);</span>
+
+
+<span class="fc" id="L112">        location.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="fc" id="L115">                GPSTracker g = new GPSTracker(getApplicationContext());</span>
+<span class="fc" id="L116">                Location l = g.getLocation();</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">                if (l != null) {</span>
+<span class="fc" id="L118">                    lat = l.getLatitude();</span>
+<span class="fc" id="L119">                    lng = l.getLongitude();</span>
+                }
+<span class="fc" id="L121">                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 15));</span>
+<span class="fc" id="L122">            }</span>
+        });
+
+
+
+        // Set a Toolbar to replace the ActionBar.
+<span class="fc" id="L128">        toolbar = findViewById(R.id.toolbar);</span>
+<span class="fc" id="L129">        setSupportActionBar(toolbar);</span>
+
+        // Find our drawer view
+<span class="fc" id="L132">        mDrawer = findViewById(R.id.drawer_layout);</span>
+<span class="fc" id="L133">        drawerToggle = setupDrawerToggle();</span>
+
+
+        // Tie DrawerLayout events to the ActionBarToggle
+<span class="fc" id="L137">        mDrawer.addDrawerListener(drawerToggle);</span>
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used
+<span class="fc" id="L139">        nvDrawer = findViewById(R.id.nvView);</span>
+<span class="fc" id="L140">        setupDrawerContent(nvDrawer);</span>
+        //Create the map
+<span class="fc" id="L142">        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()</span>
+<span class="fc" id="L143">                .findFragmentById(R.id.map);</span>
+<span class="fc" id="L144">        mapFragment.getMapAsync(this);</span>
+
+        //set user data in navDrawer
+<span class="fc" id="L147">        View navHeader = nvDrawer.getHeaderView(0);</span>
+<span class="fc" id="L148">        navHeaderUserIdText = (TextView) navHeader.findViewById(R.id.nav_headerText);</span>
+<span class="fc" id="L149">        navHeaderUserNameText = (TextView) navHeader.findViewById(R.id.nav_headermail);</span>
+<span class="fc" id="L150">        navHeaderUserIdText.setText(&quot;ID: &quot; + String.valueOf(userId));</span>
+<span class="fc" id="L151">        navHeaderUserNameText.setText(extras.getString(&quot;userFullName&quot;));</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">        if(extras.getString(&quot;role&quot;).equals(&quot;Reviewer&quot;))userId=-1;</span>
+<span class="fc" id="L153">    }</span>
+
+
+    /*
+     * method handle which item is select on the navigation drawer
+     *
+     * @param item
+     * @return
+     */
+    /*@Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }*/
+
+    /**
+     * method set up the content dynamically of the navigation drawer
+     *
+     * @param navigationView
+     */
+    private void setupDrawerContent(NavigationView navigationView) {
+<span class="fc" id="L176">        Log.e(&quot;Drawer&quot;, &quot;setup drawer content&quot;);</span>
+<span class="fc" id="L177">        navigationView.setNavigationItemSelectedListener(</span>
+<span class="fc" id="L178">                new NavigationView.OnNavigationItemSelectedListener() {</span>
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+<span class="fc" id="L181">                        selectDrawerItem(menuItem);</span>
+<span class="fc" id="L182">                        return true;</span>
+                    }
+                });
+<span class="fc" id="L185">    }</span>
+
+    /**
+     * method handle what a selected menu point will do
+     *
+     * @param menuItem
+     */
+    public void selectDrawerItem(MenuItem menuItem) {
+<span class="fc" id="L193">        Fragment fragment = null;</span>
+        Class fragmentClass;
+<span class="pc bpc" id="L195" title="1 of 9 branches missed.">        switch (menuItem.getItemId()) {</span>
+            case R.id.nav_start:
+<span class="fc" id="L197">                fragmentClass = Maps.class;</span>
+<span class="fc" id="L198">                drawPolygons(getApplicationContext());</span>
+<span class="fc" id="L199">                break;</span>
+            case R.id.nav_felder_fragment:
+<span class="fc" id="L201">                fragmentClass = FeldFragment.class;</span>
+<span class="fc" id="L202">                break;</span>
+            case R.id.nav_schadensmeldungen_fragment:
+<span class="fc" id="L204">                fragmentClass = SchadensfallFragment.class;</span>
+<span class="fc" id="L205">                break;</span>
+            case R.id.nav_vertraege_fragment:
+<span class="fc" id="L207">                fragmentClass = VertragFragment.class;</span>
+<span class="fc" id="L208">                break;</span>
+            case R.id.nav_account_fragment:
+<span class="fc" id="L210">                fragmentClass = AccountFragment.class;</span>
+<span class="fc" id="L211">                break;</span>
+            case R.id.nav_appInfo_fragment:
+<span class="fc" id="L213">                fragmentClass = AppInfoFragment.class;</span>
+<span class="fc" id="L214">                break;</span>
+            case R.id.nav_hilfe_fragment:
+<span class="fc" id="L216">                fragmentClass = HilfeFragment.class;</span>
+<span class="fc" id="L217">                break;</span>
+            case R.id.nav_logout_fragment:
+<span class="fc" id="L219">                fragmentClass = LogOutFragment.class;</span>
+<span class="fc" id="L220">                mDrawer.closeDrawers();</span>
+<span class="fc" id="L221">                showDialog();</span>
+<span class="fc" id="L222">                return;</span>
+            default:
+<span class="nc" id="L224">                fragmentClass = FeldFragment.class;</span>
+        }
+
+        try {
+<span class="fc" id="L228">            fragment = (Fragment) fragmentClass.newInstance();</span>
+<span class="nc" id="L229">        } catch (Exception e) {</span>
+<span class="nc" id="L230">            e.printStackTrace();</span>
+<span class="fc" id="L231">        }</span>
+
+        //open the new Fragment
+<span class="fc" id="L234">        FragmentManager fragmentManager = getSupportFragmentManager();</span>
+<span class="fc" id="L235">        FragmentTransaction ft = fragmentManager.beginTransaction();</span>
+
+<span class="fc" id="L237">        ft.replace(R.id.flContent, fragment).addToBackStack(&quot;tag&quot;).commit();</span>
+
+        // Set action bar title
+<span class="fc" id="L240">        setTitle(menuItem.getTitle());</span>
+
+        // Highlight the selected item has been done by NavigationView
+<span class="fc" id="L243">        menuItem.setChecked(true);</span>
+
+        // Close the navigation drawer
+<span class="fc" id="L246">        mDrawer.closeDrawers();</span>
+<span class="fc" id="L247">    }</span>
+
+    /**
+     * method sets up the drawer toggle
+     *
+     * @return
+     */
+    private ActionBarDrawerToggle setupDrawerToggle() {
+        // NOTE: Make sure you pass in a valid toolbar reference.  ActionBarDrawToggle() does not require it
+        // and will not render the hamburger icon without it.
+<span class="fc" id="L257">        return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open, R.string.drawer_close);</span>
+    }
+
+    /**
+     * method handle what the application does when the navigation drawer is open
+     *
+     * @param savedInstanceState
+     */
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+<span class="fc" id="L267">        super.onPostCreate(savedInstanceState);</span>
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+<span class="fc" id="L269">        drawerToggle.syncState();</span>
+<span class="fc" id="L270">    }</span>
+
+    /*
+     * method sets new configuration
+     *
+     * @param newConfig
+     */
+    /*@Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggles
+        drawerToggle.onConfigurationChanged(newConfig);
+    }*/
+
+    /**
+     * method opens a google map
+     *
+     * @param googleMap
+     */
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+<span class="fc" id="L291">        mMap = googleMap;</span>
+<span class="fc" id="L292">        drawPolygons(getApplicationContext());</span>
+<span class="fc" id="L293">    }</span>
+
+    /**
+     * method draws the fields from the coordinates out of the database and set Polygon onClickListener
+     *
+     * @param context
+     */
+    public static void drawPolygons(final Context context) {
+<span class="fc" id="L301">        mMap.clear();</span>
+<span class="fc" id="L302">        final DatenbankDaten db = new DatenbankDaten(context);</span>
+<span class="fc" id="L303">        db.open();</span>
+<span class="fc" id="L304">        felder = db.getFeld();</span>
+<span class="fc" id="L305">        schadensfall = db.getSchadensfall();</span>
+<span class="fc" id="L306">        ArrayList&lt;LatLng&gt; triangle = new ArrayList&lt;&gt;();</span>
+        //ArrayList&lt;Polygon&gt; polygons = new ArrayList&lt;&gt;();
+<span class="fc" id="L308">        polygons.removeAll(polygons);</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">        if (userId &gt;= 0) {</span>
+<span class="fc bfc" id="L310" title="All 2 branches covered.">            for (int j = 0; j &lt; schadensfall.length; j++) {</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">                if (userId == schadensfall[j].getFeld().getVertrag().getPerson().getId()) {</span>
+<span class="fc bfc" id="L312" title="All 2 branches covered.">                    for (int i = 0; i &lt; schadensfall[j].getSchadensposition().length; i++) {</span>
+<span class="fc" id="L313">                        triangle.add(schadensfall[j].getSchadensposition()[i]);</span>
+                    }
+<span class="fc" id="L315">                    Polygon polygon = mMap.addPolygon(new PolygonOptions()</span>
+<span class="fc" id="L316">                            .addAll(triangle)</span>
+<span class="fc" id="L317">                            .fillColor(Color.parseColor(&quot;#66ff0000&quot;))</span>
+<span class="fc" id="L318">                            .strokeColor(Color.parseColor(&quot;#66ff0000&quot;))</span>
+<span class="fc" id="L319">                            .strokeWidth(5));</span>
+<span class="fc" id="L320">                    polygon.setClickable(true);</span>
+<span class="fc" id="L321">                    polygons.add(polygon);</span>
+<span class="fc" id="L322">                    triangle.removeAll(triangle);</span>
+                }
+            }
+<span class="fc bfc" id="L325" title="All 2 branches covered.">            for (int j = 0; j &lt; felder.length; j++) {</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">                if (userId == felder[j].getVertrag().getPerson().getId()) {</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">                    for (int i = 0; i &lt; felder[j].getKoordinaten().length; i++) {</span>
+<span class="fc" id="L328">                        triangle.add(felder[j].getKoordinaten()[i]);</span>
+                    }
+<span class="fc" id="L330">                    Polygon polygon = mMap.addPolygon(new PolygonOptions()</span>
+<span class="fc" id="L331">                            .addAll(triangle)</span>
+<span class="fc" id="L332">                            .fillColor(Color.parseColor(&quot;#660000ff&quot;))</span>
+<span class="fc" id="L333">                            .strokeColor(Color.parseColor(&quot;#660000ff&quot;))</span>
+<span class="fc" id="L334">                            .strokeWidth(5));</span>
+<span class="fc" id="L335">                    polygon.setClickable(true);</span>
+<span class="fc" id="L336">                    polygons.add(polygon);</span>
+<span class="fc" id="L337">                    triangle.removeAll(triangle);</span>
+                }
+            }
+
+<span class="fc bfc" id="L341" title="All 2 branches covered.">            for (int j = 0; j &lt; felder.length; j++) {</span>
+<span class="fc bfc" id="L342" title="All 2 branches covered.">                if (userId == felder[j].getVertrag().getPerson().getId()) {</span>
+<span class="fc" id="L343">                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(felder[j].getKoordinaten()[0].latitude, felder[j].getKoordinaten()[0].longitude), 15));</span>
+<span class="fc" id="L344">                    break;</span>
+                }
+            }
+        } else {
+<span class="fc bfc" id="L348" title="All 2 branches covered.">            for (int j = 0; j &lt; schadensfall.length; j++) {</span>
+<span class="fc bfc" id="L349" title="All 2 branches covered.">                for (int i = 0; i &lt; schadensfall[j].getSchadensposition().length; i++) {</span>
+<span class="fc" id="L350">                    triangle.add(schadensfall[j].getSchadensposition()[i]);</span>
+                }
+<span class="fc" id="L352">                Polygon polygon = mMap.addPolygon(new PolygonOptions()</span>
+<span class="fc" id="L353">                        .addAll(triangle)</span>
+<span class="fc" id="L354">                        .fillColor(Color.parseColor(&quot;#66ff0000&quot;))</span>
+<span class="fc" id="L355">                        .strokeColor(Color.parseColor(&quot;#66ff0000&quot;))</span>
+<span class="fc" id="L356">                        .strokeWidth(5));</span>
+<span class="fc" id="L357">                polygon.setClickable(true);</span>
+<span class="fc" id="L358">                polygons.add(polygon);</span>
+<span class="fc" id="L359">                triangle.removeAll(triangle);</span>
+            }
+<span class="fc bfc" id="L361" title="All 2 branches covered.">            for (int j = 0; j &lt; felder.length; j++) {</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">                for (int i = 0; i &lt; felder[j].getKoordinaten().length; i++) {</span>
+<span class="fc" id="L363">                    triangle.add(felder[j].getKoordinaten()[i]);</span>
+                }
+<span class="fc" id="L365">                Polygon polygon = mMap.addPolygon(new PolygonOptions()</span>
+<span class="fc" id="L366">                        .addAll(triangle)</span>
+<span class="fc" id="L367">                        .fillColor(Color.parseColor(&quot;#660000ff&quot;))</span>
+<span class="fc" id="L368">                        .strokeColor(Color.parseColor(&quot;#660000ff&quot;))</span>
+<span class="fc" id="L369">                        .strokeWidth(5));</span>
+<span class="fc" id="L370">                polygon.setClickable(true);</span>
+<span class="fc" id="L371">                polygons.add(polygon);</span>
+<span class="fc" id="L372">                triangle.removeAll(triangle);</span>
+            }
+
+<span class="pc bpc" id="L375" title="1 of 2 branches missed.">            for (int j = 0; j &lt; felder.length; j++) {</span>
+<span class="fc" id="L376">                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(felder[j].getKoordinaten()[0].latitude, felder[j].getKoordinaten()[0].longitude), 15));</span>
+                break;
+            }
+        }
+<span class="fc" id="L380">        db.close();</span>
+<span class="fc" id="L381">        mMap.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {</span>
+            @Override
+            public void onPolygonClick(Polygon polygon) {
+<span class="fc bfc" id="L384" title="All 2 branches covered.">                for (int j = 0; j &lt; felder.length; j++) {</span>
+<span class="fc bfc" id="L385" title="All 2 branches covered.">                    if (userId == felder[j].getVertrag().getPerson().getId()) {</span>
+<span class="pc bpc" id="L386" title="1 of 2 branches missed.">                        if (felder[j].getKoordinaten()[0].latitude == polygon.getPoints().get(0).latitude)</span>
+                            //TODO after the polygon is click a information box should show with all data from the field
+                            //TODO so you need to create a box and put in data from felder[j]
+<span class="fc" id="L389">                            Toast.makeText(context, Double.toString(felder[j].getFlaeche()), Toast.LENGTH_SHORT).show();</span>
+                            /*final LatLng FELD1 = new LatLng(felder[j].getKoordinaten()[0].latitude, felder[j].getKoordinaten()[0].longitude);
+                            Marker feldX = mMap.addMarker(new MarkerOptions()
+                                    .position(FELD1)
+                                    .title(&quot;Feld&quot; + felder[j].getId())
+                                    .snippet(&quot;Feld-Art&quot; + felder[j].getArt()));
+                            feldX.showInfoWindow();*/
+
+
+                    }
+                }
+<span class="fc bfc" id="L400" title="All 2 branches covered.">                for (int j = 0; j &lt; schadensfall.length; j++) {</span>
+<span class="fc bfc" id="L401" title="All 2 branches covered.">                    if (userId == schadensfall[j].getFeld().getVertrag().getPerson().getId()) {</span>
+<span class="pc bpc" id="L402" title="1 of 2 branches missed.">                        if (schadensfall[j].getSchadensposition()[0].latitude == polygon.getPoints().get(0).latitude)</span>
+                            //TODO after the polygon is click a information box should show with all data from the field
+                            //TODO so you need to create a box and put in data from schadensfall[j]
+<span class="fc" id="L405">                            Toast.makeText(context, Double.toString(schadensfall[j].getFlaeche()), Toast.LENGTH_SHORT).show();</span>
+                    }
+                }
+<span class="fc" id="L408">            }</span>
+        });
+<span class="fc" id="L410">    }</span>
+
+    /**
+     * Method to handle user interaction in logout dialog
+     */
+    public void logoutUser() {
+<span class="fc" id="L416">        final Intent loginActivityIntent = new Intent(this, LoginActivity.class);</span>
+<span class="fc" id="L417">        startActivity(loginActivityIntent);</span>
+<span class="fc" id="L418">        finish();</span>
+<span class="fc" id="L419">    }</span>
+
+    /**
+     * Method to handle user interaction in logout dialog
+     */
+    public void negativeClickLogoutDialog() {
+        //nothing to do here for the moment
+<span class="fc" id="L426">        getFragmentManager().popBackStack();</span>
+<span class="fc" id="L427">    }</span>
+
+    /**
+     * shows the logout dialog
+     */
+    void showDialog() {
+<span class="fc" id="L433">        DialogFragment newFragment = LogOutFragment.newInstance();</span>
+<span class="fc" id="L434">        newFragment.show(getSupportFragmentManager(), &quot;Dialog&quot;);</span>
+
+<span class="fc" id="L436">    }</span>
+
+
+    /**
+     * inflates menu and enables the search icon + functionality to start
+     *
+     * @param menu current menu
+     * @return boolean true
+     */
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+<span class="fc" id="L447">        getMenuInflater().inflate(R.menu.options_menu, menu);</span>
+
+        // Associate searchable configuration with the SearchView
+<span class="fc" id="L450">        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);</span>
+
+<span class="fc" id="L452">        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();</span>
+<span class="fc" id="L453">        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));</span>
+
+
+<span class="fc" id="L456">        return true;</span>
+    }
+
+
+    /* checks if the device has an active internet connection
+     *
+     * @return boolean whether there is an internet connection (true) or not (false)
+     */
+    /*public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null &amp;&amp; netInfo.isConnected();
+    }
+
+
+    /**
+     * checks if the app runs for the very first time
+     * show dialogue that warns user of the missing map functionality
+     */
+    /*public void checkFirstRun() {
+        boolean isFirstRun = getSharedPreferences(&quot;PREFERENCE&quot;, MODE_PRIVATE).getBoolean(&quot;isFirstRun&quot;, true);
+        //first run check
+        if (isFirstRun){
+            //user warning to initiate an internet connection
+            if(isOnline() != true) {
+                final AlertDialog.Builder alertInternet = new AlertDialog.Builder(MainActivity.this);
+                alertInternet.setMessage(getString(R.string.no_internet));
+                alertInternet.setCancelable(false); //must read so no cancel
+                alertInternet.setNeutralButton(&quot;Okay&quot;, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int btn2) {
+                        dialogInterface.dismiss(); //simple dismiss
+                    }
+                });
+                alertInternet.show();
+            }
+
+            //set boolean false, so dialogue doesn't show again
+            getSharedPreferences(&quot;PREFERENCE&quot;, MODE_PRIVATE)
+                    .edit()
+                    .putBoolean(&quot;isFirstRun&quot;, false)
+                    .apply();
+        }
+    }*/
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span>Generated by the Android Gradle plugin 2.3.3</div></body></html>
